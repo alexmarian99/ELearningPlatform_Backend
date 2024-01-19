@@ -20,7 +20,7 @@ public class Lesson {
     @Column(length = 1000)
     private String description;
 
-    private String GitHubLink;
+    private String gitHubLink;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)

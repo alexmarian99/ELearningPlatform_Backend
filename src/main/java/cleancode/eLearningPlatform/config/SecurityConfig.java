@@ -25,13 +25,11 @@ public class SecurityConfig {
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.requestMatchers(
-                        "users/auth/**",
-                        "lessons"
-                        )
+                .authorizeHttpRequests((req)-> req.requestMatchers("/**")
                         .permitAll()
                         .anyRequest()
-                        .authenticated())
+                        .authenticated()
+                )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
