@@ -18,8 +18,13 @@ public class LessonController {
         return lessonService.findAllLessons();
     }
 
+    @GetMapping("/{moduleId}")
+    public List<Lesson> findModuleLessons(@PathVariable Integer moduleId){
+        return lessonService.findModuleLessons(moduleId);
+    }
+
     @PostMapping()
-    public Lesson saveLesson(@RequestParam (name = "moduleId") Integer moduleId, @RequestBody Lesson lesson){
-        return lessonService.saveLesson(moduleId, lesson);
+    public Lesson saveLesson( @RequestBody Lesson lesson){
+        return lessonService.saveLesson( lesson);
     }
 }

@@ -7,6 +7,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,17 +21,23 @@ public class LessonService {
         return lessonRepository.findAll();
     }
 
-    public Lesson saveLesson(Integer moduleId, Lesson lesson){
-        Optional<Module> optionalModule = moduleRepository.findById(moduleId);
+    public List<Lesson> findModuleLessons(Integer moduleId) {
+        return lessonRepository.findAllByModuleId(moduleId).orElse(null);
+    }
 
-        if(optionalModule.isPresent()){
-            Module module = optionalModule.get();
-            lesson.setModule(module);
-            return lessonRepository.save(lesson);
-        }else{
-            throw new RuntimeException("Module not found with ID : " + moduleId);
-        }
-
+   public Lesson saveLesson( Lesson lesson){
+//        Optional<Module> optionalModule = moduleRepository.findById(moduleId);
+//
+//        if(optionalModule.isPresent()){
+//            Module module = optionalModule.get();
+//            lesson.setModule(module);
+//            return lessonRepository.save(lesson);
+//        }else{
+//            throw new RuntimeException("Module not found with ID : " + moduleId);
+//        }
+    return lessonRepository.save(lesson);
 
     }
+
+
 }
