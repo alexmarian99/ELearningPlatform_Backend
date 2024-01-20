@@ -16,7 +16,6 @@ import java.util.Optional;
 public class LessonService {
 
     private final LessonRepository lessonRepository;
-    private final ModuleRepository moduleRepository;
     public List<Lesson> findAllLessons() {
         return lessonRepository.findAll();
     }
@@ -26,17 +25,8 @@ public class LessonService {
     }
 
    public Lesson saveLesson( Lesson lesson){
-//        Optional<Module> optionalModule = moduleRepository.findById(moduleId);
-//
-//        if(optionalModule.isPresent()){
-//            Module module = optionalModule.get();
-//            lesson.setModule(module);
-//            return lessonRepository.save(lesson);
-//        }else{
-//            throw new RuntimeException("Module not found with ID : " + moduleId);
-//        }
-    return lessonRepository.save(lesson);
 
+    return lessonRepository.save(lesson);
     }
 
 
