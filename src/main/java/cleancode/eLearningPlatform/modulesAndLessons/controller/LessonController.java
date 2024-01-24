@@ -27,4 +27,9 @@ public class LessonController {
     public Lesson saveLesson( @RequestBody Lesson lesson){
         return lessonService.saveLesson( lesson);
     }
+
+    @DeleteMapping()
+    public String deleteLesson (@RequestParam (name = "lessonId") int lessonId){
+        return lessonService.deleteLesson(lessonId);
+    }
 }

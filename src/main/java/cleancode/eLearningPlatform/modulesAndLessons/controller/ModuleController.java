@@ -10,7 +10,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/module")
+@RequestMapping("/modules")
 public class ModuleController {
 
 private final ModuleService moduleService;
@@ -23,6 +23,11 @@ private final ModuleService moduleService;
     @PostMapping
     public Module saveModules(@RequestBody Module module){
         return moduleService.saveModules(module);
+    }
+
+    @DeleteMapping
+    public String deleteModule(@RequestParam (name = "moduleId") int moduleId){
+        return moduleService.deleteModule(moduleId);
     }
 }
 
