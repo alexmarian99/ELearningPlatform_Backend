@@ -1,7 +1,5 @@
 package cleancode.eLearningPlatform.modulesAndLessons.model;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,19 +13,16 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Module {
+public class Week {
+
+
     @Id
     @GeneratedValue
     private int id;
     private String name;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="week_id")
-    private Week week;
-
     @JsonManagedReference
-    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Lesson> lessons = new ArrayList<>();
+    @OneToMany(mappedBy = "week", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Module> modules = new ArrayList<>();
 
 }
