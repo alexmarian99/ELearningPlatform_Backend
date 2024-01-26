@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -23,7 +24,6 @@ public class UserController {
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
         return ResponseEntity.ok(userService.register(registerRequest));
     }
-
 
     @PostMapping("/auth/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest){
@@ -41,3 +41,5 @@ public class UserController {
     }
 
 }
+//Cleancode@project_
+//https://hgqfncafctdofbqalpfp.supabase.co
