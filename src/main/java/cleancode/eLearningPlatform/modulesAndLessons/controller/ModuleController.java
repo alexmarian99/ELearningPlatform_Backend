@@ -24,5 +24,10 @@ private final ModuleService moduleService;
     public Module saveModules(@RequestBody Module module){
         return moduleService.saveModules(module);
     }
+
+    @DeleteMapping
+    public String deleteModule(@RequestParam (name = "moduleId") int moduleId){
+        return moduleService.deleteModule(moduleId);
+    }
 }
 

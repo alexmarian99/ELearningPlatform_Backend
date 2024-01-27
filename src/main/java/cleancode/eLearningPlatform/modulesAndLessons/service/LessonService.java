@@ -4,13 +4,10 @@ import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
-import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +23,11 @@ public class LessonService {
     }
 
    public Lesson saveLesson( Lesson lesson){
-
     return lessonRepository.save(lesson);
     }
 
-
+    public String deleteLesson(int lessonId) {
+        lessonRepository.deleteById(lessonId);
+        return "Deleted Lesson " + lessonId;
+    }
 }
