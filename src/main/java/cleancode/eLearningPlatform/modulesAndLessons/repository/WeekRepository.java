@@ -3,6 +3,8 @@ package cleancode.eLearningPlatform.modulesAndLessons.repository;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface WeekRepository extends JpaRepository<Week, Integer> {
+import java.util.List;
 
+public interface WeekRepository extends JpaRepository<Week, Integer> {
+    List<Week> findAllByModuleId(int moduleId);
 }

@@ -25,6 +25,7 @@ public class Lesson {
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Module module;
+    private Week week;
+
 
 }

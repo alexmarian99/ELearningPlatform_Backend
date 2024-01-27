@@ -20,14 +20,14 @@ public class Module {
     @GeneratedValue
     private int id;
     private String name;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="week_id")
-    private Week week;
+    private int number;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Lesson> lessons = new ArrayList<>();
+    private List<Week> weeks = new ArrayList<>();
+
+//    @JsonManagedReference
+//    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    private List<Lesson> lessons = new ArrayList<>();
 
 }

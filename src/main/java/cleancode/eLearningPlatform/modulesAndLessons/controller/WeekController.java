@@ -9,17 +9,17 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/week")
+@RequestMapping("/weeks")
 public class WeekController {
     private final WeekService weekService;
 
-    @GetMapping
-    public List<Week> findAllWeeks(){
-        return weekService.findAllWeeks();
+    @GetMapping("/{moduleId}")
+    public List<Week> findWeeksByModuleId(@PathVariable int moduleId) {
+        return weekService.findAllWeeksByModuleId(moduleId);
     }
 
     @PostMapping
-    public Week saveWeeks(@RequestBody Week week){
+    public Week saveWeeks(@RequestBody Week week) {
         return weekService.saveWeek(week);
     }
 }

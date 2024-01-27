@@ -2,6 +2,7 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 
 import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,8 @@ public class LessonService {
         return lessonRepository.findAll();
     }
 
-    public List<Lesson> findModuleLessons(Integer moduleId) {
-        return lessonRepository.findAllByModuleId(moduleId).orElse(null);
+    public List<Lesson> findLessonByWeekId(int weekId){
+        return lessonRepository.findAllByWeekId(weekId);
     }
 
    public Lesson saveLesson( Lesson lesson){

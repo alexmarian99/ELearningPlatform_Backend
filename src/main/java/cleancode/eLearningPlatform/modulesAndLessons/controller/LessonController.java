@@ -14,17 +14,23 @@ public class LessonController {
     private final LessonService lessonService;
 
     @GetMapping
-    public List<Lesson> findAllLessons(){
+    public List<Lesson> findAllLessons() {
         return lessonService.findAllLessons();
     }
 
-    @GetMapping("/{moduleId}")
-    public List<Lesson> findModuleLessons(@PathVariable Integer moduleId){
-        return lessonService.findModuleLessons(moduleId);
+//    @GetMapping("/{moduleId}")
+//    public List<Lesson> findModuleLessons(@PathVariable Integer moduleId){
+//        return lessonService.findModuleLessons(moduleId);
+//    }
+
+    @GetMapping("/{weekId}")
+
+    public List<Lesson> findAllLessonsByWeekId(@PathVariable int weekId) {
+        return lessonService.findLessonByWeekId(weekId);
     }
 
     @PostMapping()
-    public Lesson saveLesson( @RequestBody Lesson lesson){
-        return lessonService.saveLesson( lesson);
+    public Lesson saveLesson(@RequestBody Lesson lesson) {
+        return lessonService.saveLesson(lesson);
     }
 }

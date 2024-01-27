@@ -12,8 +12,8 @@ import java.util.List;
 public class WeekService {
     private final WeekRepository weekRepository;
 
-    public List<Week> findAllWeeks(){
-        return weekRepository.findAll();
+    public List<Week> findAllWeeksByModuleId(int moduleId){
+        return weekRepository.findAllByModuleId(moduleId);
     }
     public Week saveWeek(Week week){
         return weekRepository.save(week);

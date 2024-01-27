@@ -1,5 +1,6 @@
 package cleancode.eLearningPlatform.modulesAndLessons.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,10 +20,16 @@ public class Week {
     @Id
     @GeneratedValue
     private int id;
-    private String name;
+
+    private int number;
+    private String title;
+
+    @JsonBackReference
+    @ManyToOne(fetch=FetchType.LAZY)
+    private Module module;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "week", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Module> modules = new ArrayList<>();
+    @OneToMany(mappedBy = "week",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private List<Lesson> lessons = new ArrayList<>();
 
 }
