@@ -22,4 +22,9 @@ public class WeekController {
     public Week saveWeeks(@RequestBody Week week) {
         return weekService.saveWeek(week);
     }
+
+    @DeleteMapping
+    public String deleteWeek(@RequestParam (name="weekId") int weekId){
+        return weekService.deleteWeekById(weekId);
+    }
 }

@@ -18,4 +18,9 @@ public class WeekService {
     public Week saveWeek(Week week){
         return weekRepository.save(week);
     }
+
+    public String deleteWeekById(int weekId){
+        weekRepository.deleteById(weekId);
+        return "Deleted Week " +weekId+ " Succesfull";
+    }
 }
