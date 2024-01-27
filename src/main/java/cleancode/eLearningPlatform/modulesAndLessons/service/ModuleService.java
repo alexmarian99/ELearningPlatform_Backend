@@ -2,7 +2,6 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +22,6 @@ public class ModuleService {
 
     public String deleteModule(int moduleId) {
         moduleRepository.deleteById(moduleId);
-        return "Deleted module " + moduleId;
+        return "Deleted module " + moduleId ;
     }
 }

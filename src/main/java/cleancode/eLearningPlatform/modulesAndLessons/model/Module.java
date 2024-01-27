@@ -22,12 +22,12 @@ public class Module {
     private String name;
     private int number;
 
+    @Column(length = 1000)
+    private String imgLink;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
 
-//    @JsonManagedReference
-//    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    private List<Lesson> lessons = new ArrayList<>();
 
 }

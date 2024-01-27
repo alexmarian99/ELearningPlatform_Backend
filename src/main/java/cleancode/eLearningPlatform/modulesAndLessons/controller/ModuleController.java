@@ -4,6 +4,7 @@ package cleancode.eLearningPlatform.modulesAndLessons.controller;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.service.ModuleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +27,8 @@ private final ModuleService moduleService;
     }
 
     @DeleteMapping
-    public String deleteModule(@RequestParam (name = "moduleId") int moduleId){
-        return moduleService.deleteModule(moduleId);
+    public ResponseEntity<String> deleteModule(@RequestParam (name = "moduleId") int moduleId){
+        return ResponseEntity.ok( moduleService.deleteModule(moduleId));
     }
 }
 
