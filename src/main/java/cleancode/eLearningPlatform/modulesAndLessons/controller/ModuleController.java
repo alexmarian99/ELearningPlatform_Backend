@@ -29,5 +29,11 @@ private final ModuleService moduleService;
     public String deleteModule(@RequestParam (name = "moduleId") int moduleId){
         return moduleService.deleteModule(moduleId);
     }
+
+    @PutMapping("/{moduleId}")
+    public Module updateModule(@PathVariable int moduleId,@RequestBody Module updatedModule){
+        return moduleService.updateModule(moduleId,updatedModule);
+
+    }
 }
 
