@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RequiredArgsConstructor
@@ -23,5 +24,19 @@ public class ModuleService {
     public String deleteModule(int moduleId) {
         moduleRepository.deleteById(moduleId);
         return "Deleted module " + moduleId ;
+    }
+
+    public Module updateModule(int moduleId, Module updatedModule) {
+        Optional<Module> existingModuleOptional = moduleRepository.findById(moduleId);
+
+        if (existingModuleOptional.isPresent()) {
+            Module existingModule = existingModuleOptional.get();
+            existingModule.setName(updatedModule.getName());
+            existingModule.setNumber(updatedModule.getNumber());
+
+            return moduleRepository.save(existingModule);
+        } else {
+            throw new IllegalArgumentException("Module not found with id: " + moduleId);
+        }
     }
 }

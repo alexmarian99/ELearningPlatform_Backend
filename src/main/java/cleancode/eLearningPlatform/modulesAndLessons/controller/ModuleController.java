@@ -30,5 +30,11 @@ private final ModuleService moduleService;
     public ResponseEntity<String> deleteModule(@RequestParam (name = "moduleId") int moduleId){
         return ResponseEntity.ok( moduleService.deleteModule(moduleId));
     }
+
+    @PutMapping("/{moduleId}")
+    public Module updateModule(@PathVariable int moduleId,@RequestBody Module updatedModule){
+        return moduleService.updateModule(moduleId,updatedModule);
+
+    }
 }
 
