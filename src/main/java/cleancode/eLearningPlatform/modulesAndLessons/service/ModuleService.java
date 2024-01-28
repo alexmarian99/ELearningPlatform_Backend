@@ -27,9 +27,8 @@ public class ModuleService {
         return moduleRepository.save(module);
     }
 
-    public String deleteModule(int moduleId) {
+    public void deleteModule(int moduleId) {
         moduleRepository.deleteById(moduleId);
-        return "Deleted module " + moduleId ;
     }
 
     public Module updateModule(int moduleId, Module updatedModule) {

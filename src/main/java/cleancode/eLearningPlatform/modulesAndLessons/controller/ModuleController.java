@@ -39,9 +39,8 @@ private final ModuleService moduleService;
     }
 
     @PutMapping("/{moduleId}")
-    public Module updateModule(@PathVariable int moduleId,@RequestBody Module updatedModule){
+    public Module updateModule(@PathVariable int moduleId, @RequestBody Module updatedModule){
         return moduleService.updateModule(moduleId,updatedModule);
-
     }
 }
 
