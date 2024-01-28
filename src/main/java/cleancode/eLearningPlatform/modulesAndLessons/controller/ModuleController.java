@@ -20,6 +20,11 @@ private final ModuleService moduleService;
         return moduleService.findAllModules();
     }
 
+    @GetMapping("/{moduleId}")
+    public Module findModuleById(@PathVariable int moduleId){
+        return moduleService.findModuleById(moduleId);
+    }
+
     @PostMapping
     public Module saveModules(@RequestBody Module module){
         return moduleService.saveModules(module);

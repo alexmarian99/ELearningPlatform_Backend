@@ -15,10 +15,16 @@ import java.util.Optional;
 public class ModuleService {
     private final ModuleRepository moduleRepository;
 
-    public List<Module> findAllModules(){
+    public List<Module> findAllModules() {
         return moduleRepository.findAll();
     }
-    public Module saveModules(Module module){
+
+    public Module findModuleById(int moduleId) {
+        return moduleRepository.findById(moduleId).orElse(null);
+
+    }
+
+    public Module saveModules(Module module) {
         return moduleRepository.save(module);
     }
 
