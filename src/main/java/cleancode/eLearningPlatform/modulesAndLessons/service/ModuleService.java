@@ -15,7 +15,7 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
 
     public List<Module> findAllModules() {
-        return moduleRepository.findAll();
+        return moduleRepository.findAllByOrderByNumber();
     }
 
     public Module findModuleById(int moduleId) {

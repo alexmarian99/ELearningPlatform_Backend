@@ -22,7 +22,7 @@ public class Week {
     private int id;
 
     private int number;
-    private String title;
+    private String name;
 
     @JsonBackReference
     @ManyToOne(fetch=FetchType.LAZY)
