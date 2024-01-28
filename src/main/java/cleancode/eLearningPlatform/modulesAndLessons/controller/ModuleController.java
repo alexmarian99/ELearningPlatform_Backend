@@ -33,7 +33,9 @@ private final ModuleService moduleService;
 
     @DeleteMapping
     public ResponseEntity<String> deleteModule(@RequestParam (name = "moduleId") int moduleId){
-        return ResponseEntity.ok( moduleService.deleteModule(moduleId));
+//        return ResponseEntity.ok( moduleService.deleteModule(moduleId));
+        moduleService.deleteModule(moduleId);
+        return ResponseEntity.ok("Deleted module " + moduleId);
     }
 
     @PutMapping("/{moduleId}")

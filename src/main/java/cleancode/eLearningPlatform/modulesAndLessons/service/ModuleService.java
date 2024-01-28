@@ -37,12 +37,15 @@ public class ModuleService {
 
         if (existingModuleOptional.isPresent()) {
             Module existingModule = existingModuleOptional.get();
+
             existingModule.setName(updatedModule.getName());
             existingModule.setNumber(updatedModule.getNumber());
+            existingModule.setImgLink(updatedModule.getImgLink());
 
             return moduleRepository.save(existingModule);
         } else {
             throw new IllegalArgumentException("Module not found with id: " + moduleId);
         }
     }
+
 }
