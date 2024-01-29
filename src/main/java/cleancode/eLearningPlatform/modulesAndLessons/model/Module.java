@@ -1,6 +1,7 @@
 package cleancode.eLearningPlatform.modulesAndLessons.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -25,7 +26,7 @@ public class Module {
     @Column(length = 1000)
     private String imgLink;
 
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
 

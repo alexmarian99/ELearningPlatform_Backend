@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
-    List<Lesson> findAllByWeekId(int weekId);
+    List<Lesson> findAllByWeekIdOrderByWeek(int weekId);
 }

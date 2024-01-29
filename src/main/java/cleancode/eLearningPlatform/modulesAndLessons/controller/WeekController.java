@@ -13,6 +13,11 @@ import java.util.List;
 public class WeekController {
     private final WeekService weekService;
 
+    @GetMapping()
+    public Week findWeekById(@RequestParam (name="weekId") int weekId){
+        return weekService.findWeekById(weekId);
+    }
+
     @GetMapping("/{moduleId}")
     public List<Week> findWeeksByModuleId(@PathVariable int moduleId) {
         return weekService.findAllWeeksByModuleId(moduleId);
@@ -26,5 +31,10 @@ public class WeekController {
     @DeleteMapping
     public String deleteWeek(@RequestParam (name="weekId") int weekId){
         return weekService.deleteWeekById(weekId);
+    }
+
+    @PutMapping("/{weekId}")
+    public Week updateWeek(@PathVariable int weekId,@RequestBody Week updatedWeek){
+        return weekService.updateWeek(weekId,updatedWeek);
     }
 }

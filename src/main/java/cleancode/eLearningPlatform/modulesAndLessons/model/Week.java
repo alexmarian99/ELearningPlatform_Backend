@@ -23,6 +23,7 @@ public class Week {
 
     private int number;
     private String name;
+    private String imgLink;
 
     @JsonBackReference
     @ManyToOne(fetch=FetchType.LAZY)

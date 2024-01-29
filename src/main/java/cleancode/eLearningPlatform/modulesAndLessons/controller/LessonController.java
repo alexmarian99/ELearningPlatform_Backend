@@ -38,4 +38,9 @@ public class LessonController {
     public String deleteLesson (@RequestParam (name = "lessonId") int lessonId){
         return lessonService.deleteLesson(lessonId);
     }
+
+    @PutMapping("/{lessonId}")
+    public Lesson updateLesson(@PathVariable int lessonId,@RequestBody Lesson updatedLesson){
+        return lessonService.updateLesson(lessonId,updatedLesson);
+    }
 }
