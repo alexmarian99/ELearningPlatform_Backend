@@ -18,13 +18,7 @@ public class LessonController {
         return lessonService.findAllLessons();
     }
 
-//    @GetMapping("/{moduleId}")
-//    public List<Lesson> findModuleLessons(@PathVariable Integer moduleId){
-//        return lessonService.findModuleLessons(moduleId);
-//    }
-
     @GetMapping("/{weekId}")
-
     public List<Lesson> findAllLessonsByWeekId(@PathVariable int weekId) {
         return lessonService.findLessonByWeekId(weekId);
     }
