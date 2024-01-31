@@ -25,11 +25,11 @@ public class Week {
     private String name;
     private String imgLink;
 
-    @JsonBackReference
+    @JsonBackReference(value = "module")
     @ManyToOne(fetch=FetchType.LAZY)
     private Module module;
 
-    @JsonManagedReference
+    @JsonBackReference(value = "lessons")
     @OneToMany(mappedBy = "week",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<Lesson> lessons = new ArrayList<>();
 
