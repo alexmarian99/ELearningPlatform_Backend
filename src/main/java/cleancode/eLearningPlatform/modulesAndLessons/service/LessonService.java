@@ -23,6 +23,10 @@ public class LessonService {
         return lessonRepository.findAllByWeekIdOrderByWeek(weekId);
     }
 
+    public Lesson findLessonById(int lessonId){
+        return lessonRepository.findById(lessonId).orElse(null);
+    }
+
    public Lesson saveLesson( Lesson lesson){
     return lessonRepository.save(lesson);
     }
