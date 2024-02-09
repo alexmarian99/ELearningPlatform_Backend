@@ -19,7 +19,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-
     @PostMapping("/auth/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
         return ResponseEntity.ok(userService.register(registerRequest));
@@ -41,5 +40,3 @@ public class UserController {
     }
 
 }
-//Cleancode@project_
-//https://hgqfncafctdofbqalpfp.supabase.co

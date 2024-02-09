@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -21,17 +23,22 @@ public class Kata {
     private int id;
 
     private String title;
-    private String description;
+
+    @Column(columnDefinition = "TEXT")
+    private String kataLink;
 
     @Min(1)
-    @Max(10)
+    @Max(8)
     private int level;
 
-    private Language language;
-    private Category category;
 
-    @JsonBackReference
-    @JoinColumn(name="user_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    @Enumerated(EnumType.STRING)
+    private Language language;
+
+    @ElementCollection(targetClass = Category.class,fetch = FetchType.EAGER)
+    @CollectionTable(name = "kata_categories", joinColumns = @JoinColumn(name = "kata_id"))
+    @Enumerated(EnumType.STRING)
+    private List<Category> category;
+
+
 }

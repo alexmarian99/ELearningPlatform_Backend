@@ -28,7 +28,7 @@ public class LessonController {
         return lessonService.findLessonByWeekId(weekId);
     }
 
-    @PostMapping
+    @PostMapping()
     public Lesson saveLesson(@RequestBody Lesson lesson) {
         return lessonService.saveLesson(lesson);
     }
