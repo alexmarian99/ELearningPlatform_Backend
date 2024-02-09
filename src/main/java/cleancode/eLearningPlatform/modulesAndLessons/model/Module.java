@@ -23,7 +23,7 @@ public class Module {
     private String name;
     private int number;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String imgLink;
 
     @JsonBackReference
