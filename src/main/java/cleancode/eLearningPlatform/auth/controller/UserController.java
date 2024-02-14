@@ -6,7 +6,9 @@ import cleancode.eLearningPlatform.auth.model.AuthenticationResponse;
 import cleancode.eLearningPlatform.auth.model.RegisterRequest;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.service.UserService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +36,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserWithToken(authHeader));
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getUsers(){
-        return ResponseEntity.ok(userService.getAllUsers());
+    @PatchMapping("/{userId}/addOrRemoveLesson/{lessonId}")
+    public ResponseEntity<String> addOrRemoveLessonFromUser(@PathVariable (name = "userId") Long userId, @PathVariable (name = "lessonId") Integer lessonId, @RequestBody Status status){
+        return ResponseEntity.ok(userService.addOrRemoveLessonFromUser(userId, lessonId, status));
     }
 
 }

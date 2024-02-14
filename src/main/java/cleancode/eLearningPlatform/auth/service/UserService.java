@@ -5,13 +5,17 @@ package cleancode.eLearningPlatform.auth.service;
 import cleancode.eLearningPlatform.auth.model.*;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.config.JWTService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +67,22 @@ public class UserService {
         return user;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public String addOrRemoveLessonFromUser(Long userId, Integer lessonId, Status status) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        System.out.println(status + " " + userId + " " + lessonId);
+
+        if(optionalUser.isPresent()){
+            if(status.equals(Status.DONE)){
+                optionalUser.get().getCompletedLessons().add(lessonId);
+                System.out.println( optionalUser.get().toString());
+            }else{
+                optionalUser.get().getCompletedLessons().remove(Integer.valueOf(lessonId));
+                System.out.println( optionalUser.get().toString());
+            }
+
+        }
+
+        userRepository.save(optionalUser.get());
+        return "ok";
     }
 }

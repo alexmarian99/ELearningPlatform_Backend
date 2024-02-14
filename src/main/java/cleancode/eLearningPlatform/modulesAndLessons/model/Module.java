@@ -27,7 +27,7 @@ public class Module {
     private String imgLink;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
 
 

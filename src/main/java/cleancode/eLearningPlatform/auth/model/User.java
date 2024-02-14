@@ -1,5 +1,6 @@
 package cleancode.eLearningPlatform.auth.model;
 
+import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
@@ -37,6 +38,10 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @ElementCollection( fetch = FetchType.EAGER)
+    @CollectionTable(name = "completed_lesson", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Integer> completedLessons = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
