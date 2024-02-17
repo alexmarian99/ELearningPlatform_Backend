@@ -1,5 +1,7 @@
 package cleancode.eLearningPlatform.modulesAndLessons.service;
 
+import cleancode.eLearningPlatform.auth.model.User;
+import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class LessonService {
 
     private final LessonRepository lessonRepository;
+    private final UserRepository userRepository;
     public List<Lesson> findAllLessons() {
         return lessonRepository.findAll();
     }
@@ -32,6 +35,15 @@ public class LessonService {
     }
 
     public String deleteLesson(int lessonId) {
+
+        List<User> users = userRepository.findAll();
+
+
+        for (User user : users ) {
+            user.getCompletedLessons().removeIf(item -> item == lessonId);
+            userRepository.save(user);
+        }
+
         lessonRepository.deleteById(lessonId);
         return "Deleted Lesson " + lessonId;
     }

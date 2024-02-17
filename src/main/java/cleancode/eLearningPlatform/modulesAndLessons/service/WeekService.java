@@ -3,7 +3,9 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WeekService {
     private final WeekRepository weekRepository;
+    private final LessonService lessonService;
 
     public Week findWeekById(int weekId){
         return weekRepository.findById(weekId).orElse(null);
@@ -25,8 +28,14 @@ public class WeekService {
         return weekRepository.save(week);
     }
 
+    @Transactional
+    @Modifying
     public String deleteWeekById(int weekId){
-        weekRepository.deleteById(weekId);
+        Week deletedWeek = weekRepository.findById(weekId).orElse(null);
+
+        deletedWeek.getLessons().stream().forEach(lesson -> lessonService.deleteLesson(lesson.getId()));
+
+        weekRepository.delete(deletedWeek);
         return "Deleted Week " +weekId+ " Succesfull";
     }
 
