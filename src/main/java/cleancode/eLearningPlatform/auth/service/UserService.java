@@ -67,7 +67,7 @@ public class UserService {
         return user;
     }
 
-    public String addOrRemoveLessonFromUser(Long userId, Integer lessonId, Status status) {
+    public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Status status) {
         Optional<User> optionalUser = userRepository.findById(userId);
         System.out.println(status + " " + userId + " " + lessonId);
 
@@ -83,6 +83,6 @@ public class UserService {
         }
 
         userRepository.save(optionalUser.get());
-        return "ok";
+        return Response.builder().response("ok").build();
     }
 }
