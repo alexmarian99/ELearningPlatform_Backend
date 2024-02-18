@@ -33,4 +33,13 @@ public class Week {
     @OneToMany(mappedBy = "week",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
     private List<Lesson> lessons = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "Week{" +
+                "id=" + id +
+                ", number=" + number +
+                ", name='" + name + '\'' +
+                ", imgLink='" + imgLink + '\'' +
+                '}';
+    }
 }

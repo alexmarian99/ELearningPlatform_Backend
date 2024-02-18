@@ -32,9 +32,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserWithToken(authHeader));
     }
 
-    @PatchMapping("/{userId}/addOrRemoveLesson/{lessonId}")
-    public ResponseEntity<Response> addOrRemoveLessonFromUser(@PathVariable (name = "userId") Long userId, @PathVariable (name = "lessonId") Integer lessonId, @RequestBody Status status){
-        return ResponseEntity.ok(userService.addOrRemoveLessonFromUser(userId, lessonId, status));
+    @PatchMapping()
+    public ResponseEntity<Response> addOrRemoveLessonFromUser(@RequestParam (name = "userId") Long userId, @RequestParam (name = "lessonId") Integer lessonId , @RequestParam (name = "weekId") Integer weekId ,  @RequestBody Status status){
+        return ResponseEntity.ok(userService.addOrRemoveLessonFromUser(userId, lessonId,weekId, status));
     }
 
 }

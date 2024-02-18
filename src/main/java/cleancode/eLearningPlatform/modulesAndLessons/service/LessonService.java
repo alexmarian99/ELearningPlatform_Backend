@@ -35,9 +35,7 @@ public class LessonService {
     }
 
     public String deleteLesson(int lessonId) {
-
         List<User> users = userRepository.findAll();
-
 
         for (User user : users ) {
             user.getCompletedLessons().removeIf(item -> item == lessonId);

@@ -5,7 +5,10 @@ package cleancode.eLearningPlatform.auth.service;
 import cleancode.eLearningPlatform.auth.model.*;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.config.JWTService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
+import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final LessonRepository lessonRepository;
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -67,22 +71,37 @@ public class UserService {
         return user;
     }
 
-    public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Status status) {
+
+    public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        System.out.println(status + " " + userId + " " + lessonId);
+        List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
+        // System.out.println(status + " " + userId + " " + lessonId + " weekID " + weekId);
+
+        long result = lessons.stream().filter(lesson -> optionalUser.get().getCompletedLessons().contains(lesson.getId())).count() + 1;
+        System.out.println("Lessons " + lessons.size() + " completed " + (result));
+
 
         if(optionalUser.isPresent()){
-            if(status.equals(Status.DONE)){
-                optionalUser.get().getCompletedLessons().add(lessonId);
-                System.out.println( optionalUser.get().toString());
-            }else{
-                optionalUser.get().getCompletedLessons().remove(Integer.valueOf(lessonId));
-                System.out.println( optionalUser.get().toString());
-            }
+            User user = optionalUser.get();
 
+            if(status.equals(Status.DONE)){
+                user.getCompletedLessons().add(lessonId);
+                if(result == lessons.size()){
+                    System.out.println("ADD WEEK");
+                    user.getCompletedWeeks().add(weekId);
+                }
+            }else{
+               user.getCompletedLessons().remove(Integer.valueOf(lessonId));
+                if(result - lessons.size() == 1){
+                    System.out.println("REMOVE WEEEKKKKKKKKKKKKKKKKKKKKKK");
+                    user.getCompletedWeeks().remove(Integer.valueOf(weekId));
+                }
+            }
+            userRepository.save(user);
         }
 
-        userRepository.save(optionalUser.get());
+
         return Response.builder().response("ok").build();
     }
+
 }
