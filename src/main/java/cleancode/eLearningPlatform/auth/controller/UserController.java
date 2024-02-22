@@ -17,6 +17,16 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/getUserWithToken")
+    public ResponseEntity<User> getUserWithToken(@RequestHeader("Authorization") String authHeader){
+        return ResponseEntity.ok(userService.getUserWithToken(authHeader));
+    }
+
+    @GetMapping("/{userId}/completedStuff")
+    public ResponseEntity<CompletedStuff> getCompletedStuffByUserId(@PathVariable Integer userId){
+        return ResponseEntity.ok(userService.getCompletedStuff(userId));
+    }
+
     @PostMapping("/auth/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
         return ResponseEntity.ok(userService.register(registerRequest));
@@ -25,11 +35,6 @@ public class UserController {
     @PostMapping("/auth/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest){
         return ResponseEntity.ok(userService.authenticate(authenticationRequest));
-    }
-
-    @GetMapping("/getUserWithToken")
-    public ResponseEntity<User> getUserWithToken(@RequestHeader("Authorization") String authHeader){
-        return ResponseEntity.ok(userService.getUserWithToken(authHeader));
     }
 
     @PatchMapping()

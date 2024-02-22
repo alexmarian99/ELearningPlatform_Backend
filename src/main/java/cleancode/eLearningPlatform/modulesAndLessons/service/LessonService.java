@@ -2,9 +2,8 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
+import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
-import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
-import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     public List<Lesson> findAllLessons() {
         return lessonRepository.findAll();
     }
@@ -31,7 +31,8 @@ public class LessonService {
     }
 
    public Lesson saveLesson( Lesson lesson){
-    return lessonRepository.save(lesson);
+        userService.removeOrAddWeekFromAllUser(lesson.getWeek().getId());
+        return lessonRepository.save(lesson);
     }
 
     public String deleteLesson(int lessonId) {
@@ -45,6 +46,8 @@ public class LessonService {
         lessonRepository.deleteById(lessonId);
         return "Deleted Lesson " + lessonId;
     }
+
+
     public Lesson updateLesson(int lessonId, Lesson updatedLesson){
         Optional<Lesson> existUpdatedOptional = lessonRepository.findById(lessonId);
 
