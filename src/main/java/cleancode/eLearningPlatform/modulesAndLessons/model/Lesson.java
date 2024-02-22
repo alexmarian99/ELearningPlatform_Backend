@@ -28,4 +28,13 @@ public class Lesson {
     private Week week;
 
 
+    @Override
+    public String toString() {
+        return "Lesson{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", gitHubLink='" + gitHubLink + '\'' +
+                '}';
+    }
 }

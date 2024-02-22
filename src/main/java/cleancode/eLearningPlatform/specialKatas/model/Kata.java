@@ -31,7 +31,6 @@ public class Kata {
     @Max(8)
     private int level;
 
-
     @Enumerated(EnumType.STRING)
     private Language language;
 
@@ -39,6 +38,4 @@ public class Kata {
     @CollectionTable(name = "kata_categories", joinColumns = @JoinColumn(name = "kata_id"))
     @Enumerated(EnumType.STRING)
     private List<Category> category;
-
-
 }

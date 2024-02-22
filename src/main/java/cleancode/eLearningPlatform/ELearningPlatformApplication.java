@@ -9,5 +9,4 @@ public class ELearningPlatformApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ELearningPlatformApplication.class, args);
 	}
-
 }

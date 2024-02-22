@@ -23,11 +23,11 @@ public class Module {
     private String name;
     private int number;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String imgLink;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "module", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
 
 
