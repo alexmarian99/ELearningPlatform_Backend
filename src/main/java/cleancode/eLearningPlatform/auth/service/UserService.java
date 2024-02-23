@@ -1,7 +1,6 @@
 package cleancode.eLearningPlatform.auth.service;
 
 
-
 import cleancode.eLearningPlatform.auth.model.*;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.config.JWTService;
@@ -9,6 +8,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
+import cleancode.eLearningPlatform.modulesAndLessons.service.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,10 +32,9 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
-
         boolean usernameExists = userRepository.existsByUsername(registerRequest.getUsername());
 
-        if(usernameExists){
+        if (usernameExists) {
             return AuthenticationResponse.builder().response("0").build();
         }
 
@@ -43,7 +42,7 @@ public class UserService {
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
                 .username(registerRequest.getUsername())
-                .password( passwordEncoder.encode(registerRequest.getPassword()))
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(Role.USER)
                 .build();
 
@@ -53,7 +52,7 @@ public class UserService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
-        authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getUsername(),
                 authenticationRequest.getPassword()
         ));
@@ -68,38 +67,42 @@ public class UserService {
         return user;
     }
 
-    public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status, User... optionalUser) {
+        User user = optionalUser.length != 0 ? optionalUser[0] : userRepository.findById(userId).orElse(null);
         List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
-        // System.out.println(status + " " + userId + " " + lessonId + " weekID " + weekId);
 
-        long result = lessons.stream().filter(lesson -> optionalUser.get().getCompletedLessons().contains(lesson.getId())).count() + 1;
-        System.out.println("Lessons " + lessons.size() + " completed " + (result));
 
-        if(optionalUser.isPresent()){
-            User user = optionalUser.get();
 
-            if(status.equals(Status.DONE)){
-                user.getCompletedLessons().add(lessonId);
-                if(result == lessons.size()){
-                    System.out.println("ADD WEEK");
-                    user.getCompletedWeeks().add(weekId);
-                }
-            }else{
-               user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-                if(result - lessons.size() == 1){
-                    System.out.println("REMOVE WEEEKKKKKKKKKKKKKKKKKKKKKK");
-                    user.getCompletedWeeks().remove(Integer.valueOf(weekId));
-                }
-            }
-            userRepository.save(user);
+        System.out.println("REST OF LESSONS " + lessons);
+        System.out.println(" function addOrRemoveLessonFromUser callde ----------------------------------------------");
+//        System.out.println(user.toString() + " optional user -----------------------------------------------");
+//        System.out.println(userRepository.findById(userId).get().toString() + " optional user -----------------------------------------------");
+
+        if (status.equals(Status.DONE)) {
+            user.getCompletedLessons().add(lessonId);
+        } else {
+            user.getCompletedLessons().remove(Integer.valueOf(lessonId));
         }
 
+        long result = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
+        System.out.println("RESULT AND LESSONS SIZE " + result + "  " + lessons.size());
+
+        if (result == lessons.size()) {
+            System.out.println("ADD WEEK");
+            user.getCompletedWeeks().add(weekId);
+        }
+
+        if (lessons.size() - result  == 1) {
+            System.out.println("REMOVE WEEEKKKKKKKKKKKKKKKKKKKKKK");
+            user.getCompletedWeeks().remove(Integer.valueOf(weekId));
+        }
+
+        userRepository.save(user);
         return Response.builder().response("ok").build();
     }
 
 
-    public void removeOrAddWeekFromAllUser(Integer weekId){
+    public void removeOrAddWeekFromAllUser(Integer weekId) {
         List<User> users = userRepository.findAll();
         users.stream().forEach(user -> {
             user.getCompletedWeeks().remove(Integer.valueOf(weekId));
@@ -108,10 +111,10 @@ public class UserService {
     }
 
     public CompletedStuff getCompletedStuff(Integer userId) {
-        List<Integer>  lessons = userRepository.getJustLessons(userId);
-        List<Integer>  weeks = userRepository.getJustWeeks(userId);
+        List<Integer> lessons = userRepository.getJustLessons(userId);
+        List<Integer> weeks = userRepository.getJustWeeks(userId);
 
-                      //first try
+        //first try
 
 //        System.out.println(lessons);
 //        System.out.println(weeks);
@@ -122,7 +125,7 @@ public class UserService {
 //        List<List<Integer>> test3 = userRepository.test3(userId);
 //        System.out.println(test3);
 
-                      //second try
+        //second try
 
 //        List<Object[]> resultList = userRepository.getLessonsAndWeeks(userId);
 //        List<List<Integer>> combinedList = new ArrayList<>();
@@ -144,7 +147,7 @@ public class UserService {
 //            System.out.println(combined);
 //
 //            combinedList.add(combined);
- //       }
+        //       }
 
         return CompletedStuff.builder().completedLessons(lessons).completedWeeks(weeks).build();
     }

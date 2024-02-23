@@ -4,6 +4,7 @@ import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,15 +36,20 @@ public class LessonService {
         return lessonRepository.save(lesson);
     }
 
-    public String deleteLesson(int lessonId) {
+    public String deleteLesson(Integer lessonId, Integer weekId) {
         List<User> users = userRepository.findAll();
+        System.out.println("in delete ------------------------------------------------------------");
 
         for (User user : users ) {
-            user.getCompletedLessons().removeIf(item -> item == lessonId);
-            userRepository.save(user);
+
+//            user.getCompletedLessons().removeIf(item -> item == lessonId);
+            userService.addOrRemoveLessonFromUser(user.getId(), lessonId, weekId, Status.TODO, user);
+//            userRepository.save(user);
         }
 
+        System.out.println( " before delete lesson----------------------------------------------");
         lessonRepository.deleteById(lessonId);
+        System.out.println(" after delete lesson ----------------------------------------------");
         return "Deleted Lesson " + lessonId;
     }
 

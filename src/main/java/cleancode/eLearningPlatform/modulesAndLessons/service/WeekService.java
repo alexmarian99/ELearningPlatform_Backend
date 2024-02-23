@@ -32,7 +32,7 @@ public class WeekService {
 
     @Transactional
     @Modifying
-    public String deleteWeekById(int weekId){
+    public String deleteWeekById(Integer weekId){
         Week deletedWeek = weekRepository.findById(weekId).orElse(null);
         List<User> users = userRepository.findAll();
         users.stream().forEach(user -> {
@@ -40,7 +40,7 @@ public class WeekService {
                                 userRepository.save(user);
                                 });
 
-        deletedWeek.getLessons().stream().forEach(lesson -> lessonService.deleteLesson(lesson.getId()));
+        deletedWeek.getLessons().stream().forEach(lesson -> lessonService.deleteLesson(lesson.getId(), weekId));
 
         weekRepository.delete(deletedWeek);
         return "Deleted Week " +weekId+ " Succesfull";
