@@ -70,31 +70,28 @@ public class UserService {
     public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status, User... optionalUser) {
         User user = optionalUser.length != 0 ? optionalUser[0] : userRepository.findById(userId).orElse(null);
         List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
+        long firstResult = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
 
-
-
-        System.out.println("REST OF LESSONS " + lessons);
-        System.out.println(" function addOrRemoveLessonFromUser callde ----------------------------------------------");
-//        System.out.println(user.toString() + " optional user -----------------------------------------------");
-//        System.out.println(userRepository.findById(userId).get().toString() + " optional user -----------------------------------------------");
-
-        if (status.equals(Status.DONE)) {
-            user.getCompletedLessons().add(lessonId);
-        } else {
+        if(optionalUser.length == 0) {
+            if (status.equals(Status.DONE)) {
+                user.getCompletedLessons().add(lessonId);
+                if (firstResult + 1 == lessons.size()) {
+                    System.out.println("ADD WEEK");
+                    user.getCompletedWeeks().add(weekId);
+                }
+            } else {
+                user.getCompletedLessons().remove(Integer.valueOf(lessonId));
+                if (lessons.size() - firstResult == 0) {
+                    System.out.println("REMOVE WEEEKKKKKKKKKKKKKKKKKKKKKK");
+                    user.getCompletedWeeks().remove(Integer.valueOf(weekId));
+                }
+            }
+        }else{
             user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-        }
-
-        long result = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
-        System.out.println("RESULT AND LESSONS SIZE " + result + "  " + lessons.size());
-
-        if (result == lessons.size()) {
-            System.out.println("ADD WEEK");
-            user.getCompletedWeeks().add(weekId);
-        }
-
-        if (lessons.size() - result  == 1) {
-            System.out.println("REMOVE WEEEKKKKKKKKKKKKKKKKKKKKKK");
-            user.getCompletedWeeks().remove(Integer.valueOf(weekId));
+            long secondResult = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
+            if(lessons.size() - firstResult == 1 && secondResult == lessons.size() -1){
+                user.getCompletedWeeks().add(weekId);
+            }
         }
 
         userRepository.save(user);
