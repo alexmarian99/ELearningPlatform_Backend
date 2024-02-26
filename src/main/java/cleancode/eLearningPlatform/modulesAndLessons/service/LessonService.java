@@ -36,20 +36,14 @@ public class LessonService {
         return lessonRepository.save(lesson);
     }
 
-    public String deleteLesson(Integer lessonId, Integer weekId) {
-        List<User> users = userRepository.findAll();
-        System.out.println("in delete ------------------------------------------------------------");
+    public String deleteLesson(Integer lessonId, Integer weekId, List<User>... optionalUsers) {
+        List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         for (User user : users ) {
-
-//            user.getCompletedLessons().removeIf(item -> item == lessonId);
             userService.addOrRemoveLessonFromUser(user.getId(), lessonId, weekId, Status.TODO, user);
-//            userRepository.save(user);
         }
 
-        System.out.println( " before delete lesson----------------------------------------------");
         lessonRepository.deleteById(lessonId);
-        System.out.println(" after delete lesson ----------------------------------------------");
         return "Deleted Lesson " + lessonId;
     }
 

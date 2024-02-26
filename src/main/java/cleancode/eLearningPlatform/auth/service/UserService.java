@@ -8,6 +8,8 @@ import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
+import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
+import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.service.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final LessonRepository lessonRepository;
+    private final WeekRepository weekRepository;
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -70,34 +73,56 @@ public class UserService {
     public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status, User... optionalUser) {
         User user = optionalUser.length != 0 ? optionalUser[0] : userRepository.findById(userId).orElse(null);
         List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
-        long firstResult = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
+        long completedLessonsBefore = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
 
+        // if the optional user is present (optionalUser.length != 0),that means that its a delete operation going so the status needs to change differently
         if(optionalUser.length == 0) {
             if (status.equals(Status.DONE)) {
                 user.getCompletedLessons().add(lessonId);
-                if (firstResult + 1 == lessons.size()) {
-                    System.out.println("ADD WEEK");
+                if (completedLessonsBefore + 1 == lessons.size()) {
                     user.getCompletedWeeks().add(weekId);
+                    checkAndModifyModuleStatus(user, weekId, status);
                 }
             } else {
                 user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-                if (lessons.size() - firstResult == 0) {
-                    System.out.println("REMOVE WEEEKKKKKKKKKKKKKKKKKKKKKK");
+                if (lessons.size() - completedLessonsBefore == 0) {
                     user.getCompletedWeeks().remove(Integer.valueOf(weekId));
+                    checkAndModifyModuleStatus(user, weekId, status);
                 }
             }
         }else{
             user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-            long secondResult = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
-            if(lessons.size() - firstResult == 1 && secondResult == lessons.size() -1){
+            long completedLessonsAfter = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
+            if(lessons.size() - completedLessonsBefore == 1 && completedLessonsAfter == lessons.size() -1){
                 user.getCompletedWeeks().add(weekId);
+                checkAndModifyModuleStatus(user, weekId, status);
             }
+           if(completedLessonsAfter == 0){
+               user.getCompletedWeeks().remove(Integer.valueOf(weekId));
+               checkAndModifyModuleStatus(user, weekId, status);
+           }
         }
 
         userRepository.save(user);
         return Response.builder().response("ok").build();
     }
 
+
+
+    public void checkAndModifyModuleStatus(User user, int weekId, Status status){
+        List<Week> restOfWeeks = weekRepository.getRestOfWeeks(weekId);
+        long completedWeeksBefore = restOfWeeks.stream().filter(week -> user.getCompletedWeeks().contains( week.getId())).count();
+        int moduleId = weekRepository.getModuleIdFromWeek(weekId);
+
+        if(completedWeeksBefore == restOfWeeks.size()){
+            System.out.println("ADD MODULE ---------------------------------------");
+            user.getCompletedModules().add(moduleId);
+        }
+        if(restOfWeeks.size() - completedWeeksBefore == 1 && status.equals(Status.TODO)){
+            System.out.println("DELTE MODULE ----------------------------");
+            user.getCompletedModules().remove(Integer.valueOf(moduleId));
+        }
+    }
 
     public void removeOrAddWeekFromAllUser(Integer weekId) {
         List<User> users = userRepository.findAll();
@@ -110,42 +135,8 @@ public class UserService {
     public CompletedStuff getCompletedStuff(Integer userId) {
         List<Integer> lessons = userRepository.getJustLessons(userId);
         List<Integer> weeks = userRepository.getJustWeeks(userId);
+        List<Integer> modules = userRepository.getJustModules(userId);
 
-        //first try
-
-//        System.out.println(lessons);
-//        System.out.println(weeks);
-//
-//        List<List<Integer>> lessonsAndWeeks = userRepository.getLessonsAndWeeks(userId);
-//        System.out.println(lessonsAndWeeks);
-//
-//        List<List<Integer>> test3 = userRepository.test3(userId);
-//        System.out.println(test3);
-
-        //second try
-
-//        List<Object[]> resultList = userRepository.getLessonsAndWeeks(userId);
-//        List<List<Integer>> combinedList = new ArrayList<>();
-//        for (Object[] result : resultList) {
-//            System.out.println(result[0]);
-//            System.out.println(result[1]);
-//
-//            System.out.println();
-//            List<Integer> lessons1 = (List<Integer>) result[0];
-//            List<Integer> weeks1 = (List<Integer>) result[1];
-//
-//            System.out.println(lessons1);
-//            System.out.println(weeks1);
-//
-//            List<Integer> combined = new ArrayList<>();
-//            combined.addAll(lessons1);
-//            combined.addAll(weeks1);
-//
-//            System.out.println(combined);
-//
-//            combinedList.add(combined);
-        //       }
-
-        return CompletedStuff.builder().completedLessons(lessons).completedWeeks(weeks).build();
+        return CompletedStuff.builder().completedLessons(lessons).completedWeeks(weeks).completedModules(modules).build();
     }
 }
