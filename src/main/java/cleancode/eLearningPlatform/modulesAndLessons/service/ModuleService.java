@@ -2,6 +2,7 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
+import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final WeekService weekService;
 
     public List<Module> findAllModules() {
@@ -39,9 +41,10 @@ public class ModuleService {
         List<User> users = userRepository.findAll();
         Module module = moduleRepository.findById(moduleId).orElse(null);
 
-        module.getWeeks().stream().forEach(week -> weekService.deleteWeekById(week.getId(), users));
+        userService.removeModuleFromAllUsers(module, users);
 
-        moduleRepository.deleteById(moduleId);
+        moduleRepository.delete(moduleRepository.findById(moduleId).orElse(null));
+        System.out.println("DELETE MODULE -> " + moduleId + "__________________________________");
     }
 
     public Module updateModule(int moduleId, Module updatedModule) {

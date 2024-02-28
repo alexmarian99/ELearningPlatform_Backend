@@ -31,4 +31,14 @@ public class Module {
     private List<Week> weeks = new ArrayList<>();
 
 
+    @Override
+    public String toString() {
+        return "Module{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", number=" + number +
+                ", imgLink='" + imgLink + '\'' +
+                ", weeks=" + weeks +
+                '}';
+    }
 }

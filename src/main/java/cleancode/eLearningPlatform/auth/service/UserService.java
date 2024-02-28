@@ -5,24 +5,18 @@ import cleancode.eLearningPlatform.auth.model.*;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.config.JWTService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
-import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
-import cleancode.eLearningPlatform.modulesAndLessons.service.LessonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,44 +64,51 @@ public class UserService {
         return user;
     }
 
-    public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status, User... optionalUser) {
-        User user = optionalUser.length != 0 ? optionalUser[0] : userRepository.findById(userId).orElse(null);
+    public Response addOrRemoveStatusOnDelete(Integer lessonId, User user){
+        user.getCompletedLessons().remove(Integer.valueOf(lessonId));
+        List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
+        long completedLessonsAfter = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
+
+        System.out.println("STATUS MODIFIED ---------------------");
+        return null;
+
+//        if(lessons.size() - completedLessonsBefore == 1 && completedLessonsAfter == lessons.size() -1){
+//            System.out.println("ADD WEEK FROM DELETE -> " + weekId);
+//            user.getCompletedWeeks().add(weekId);
+//            checkAndModifyModuleStatus(user, weekId, status);
+//        }
+//        if(completedLessonsAfter == 0 && completedLessonsBefore == 0){
+//            System.out.println("REMOVE WEEK FROM DELETE -> " + weekId);
+//            user.getCompletedWeeks().remove(Integer.valueOf(weekId));
+//            checkAndModifyModuleStatus(user, weekId, status);
+//        }
+    }
+
+
+    public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status) {
+        User user = userRepository.findById(userId).orElse(null);
         List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
         long completedLessonsBefore = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
 
-        // if the optional user is present (optionalUser.length != 0),that means that its a delete operation going so the status needs to change differently
-        if(optionalUser.length == 0) {
             if (status.equals(Status.DONE)) {
                 user.getCompletedLessons().add(lessonId);
                 if (completedLessonsBefore + 1 == lessons.size()) {
+                    System.out.println("ADD WEEK FROM STATUS -> " + weekId);
                     user.getCompletedWeeks().add(weekId);
                     checkAndModifyModuleStatus(user, weekId, status);
                 }
             } else {
                 user.getCompletedLessons().remove(Integer.valueOf(lessonId));
                 if (lessons.size() - completedLessonsBefore == 0) {
+                    System.out.println("REMOVE WEEK FROM STATUS -> " + weekId);
                     user.getCompletedWeeks().remove(Integer.valueOf(weekId));
                     checkAndModifyModuleStatus(user, weekId, status);
                 }
             }
-        }else{
-            user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-            long completedLessonsAfter = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
-            if(lessons.size() - completedLessonsBefore == 1 && completedLessonsAfter == lessons.size() -1){
-                user.getCompletedWeeks().add(weekId);
-                checkAndModifyModuleStatus(user, weekId, status);
-            }
-           if(completedLessonsAfter == 0){
-               user.getCompletedWeeks().remove(Integer.valueOf(weekId));
-               checkAndModifyModuleStatus(user, weekId, status);
-           }
-        }
 
         userRepository.save(user);
         return Response.builder().response("ok").build();
     }
-
-
 
     public void checkAndModifyModuleStatus(User user, int weekId, Status status){
         List<Week> restOfWeeks = weekRepository.getRestOfWeeks(weekId);
@@ -119,17 +120,43 @@ public class UserService {
             user.getCompletedModules().add(moduleId);
         }
         if(restOfWeeks.size() - completedWeeksBefore == 1 && status.equals(Status.TODO)){
-            System.out.println("DELTE MODULE ----------------------------");
+            System.out.println("REMOVE MODULE ----------------------------");
             user.getCompletedModules().remove(Integer.valueOf(moduleId));
         }
     }
 
+
+    //to replace and delete
     public void removeOrAddWeekFromAllUser(Integer weekId) {
         List<User> users = userRepository.findAll();
         users.stream().forEach(user -> {
             user.getCompletedWeeks().remove(Integer.valueOf(weekId));
             userRepository.save(user);
         });
+    }
+
+    public void removeModuleFromAllUsers(Module module, List<User>... optionalUsers){
+        List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
+
+        users.stream().forEach( user -> {
+            module.getWeeks().stream().forEach(week -> removeWeekFromAllUsers(week, users));
+            user.getCompletedModules().remove(Integer.valueOf(module.getId()));
+        });
+    }
+
+    public void removeWeekFromAllUsers(Week week, List<User>... optionalUsers){
+        List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
+
+        users.stream().forEach( user -> {
+            week.getLessons().stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), users));
+            user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+        });
+    }
+
+    public void removeLessonFromAllUsers(Integer lessonId, List<User>... optionalUsers){
+        List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
+
+        users.stream().forEach( user -> user.getCompletedLessons().remove(Integer.valueOf(lessonId)));
     }
 
     public CompletedStuff getCompletedStuff(Integer userId) {
