@@ -41,7 +41,7 @@ public class ModuleService {
         List<User> users = userRepository.findAll();
         Module module = moduleRepository.findById(moduleId).orElse(null);
 
-        userService.removeModuleFromAllUsers(module, users);
+        userService.removeModuleFromAllUsers(module,true, users);
 
         moduleRepository.delete(moduleRepository.findById(moduleId).orElse(null));
         System.out.println("DELETE MODULE -> " + moduleId + "__________________________________");

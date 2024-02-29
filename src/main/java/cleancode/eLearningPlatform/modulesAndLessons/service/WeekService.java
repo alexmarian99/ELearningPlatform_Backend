@@ -3,7 +3,9 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.auth.service.UserService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
+import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WeekService {
     private final WeekRepository weekRepository;
-    private final LessonService lessonService;
+    private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
     private final UserService userService;
 
@@ -28,7 +30,13 @@ public class WeekService {
     public List<Week> findAllWeeksByModuleId(int moduleId){
         return weekRepository.findAllByModuleIdOrderByNumber(moduleId);
     }
+
+    @Transactional
+    @Modifying
     public Week saveWeek(Week week){
+        Module module = moduleRepository.findById(week.getModule().getId()).orElse(null);
+        userService.removeModuleFromAllUsers(module, false);
+
         return weekRepository.save(week);
     }
 
@@ -38,7 +46,7 @@ public class WeekService {
         Week deletedWeek = weekRepository.findById(weekId).orElse(null);
         List<User> users = optionalUsers.length == 0 ? userRepository.findAll() : optionalUsers[0];
 
-        userService.removeWeekFromAllUsers(deletedWeek, users);
+        userService.removeWeekFromAllUsers(deletedWeek, true, users);
 
         weekRepository.delete(deletedWeek);
         System.out.println("DELETE WEEK " + weekId + "_________________________________________________");

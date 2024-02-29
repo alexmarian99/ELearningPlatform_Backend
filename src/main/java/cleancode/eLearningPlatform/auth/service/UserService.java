@@ -135,22 +135,36 @@ public class UserService {
         });
     }
 
-    public void removeModuleFromAllUsers(Module module, List<User>... optionalUsers){
+    public void removeModuleFromAllUsers(Module module ,boolean cascadeDelete, List<User>... optionalUsers){
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
-        users.stream().forEach( user -> {
-            module.getWeeks().stream().forEach(week -> removeWeekFromAllUsers(week, users));
-            user.getCompletedModules().remove(Integer.valueOf(module.getId()));
-        });
+        if(cascadeDelete){
+            users.stream().forEach( user -> {
+                module.getWeeks().stream().forEach(week -> removeWeekFromAllUsers(week, true, users));
+                user.getCompletedModules().remove(Integer.valueOf(module.getId()));
+            });
+        }else{
+            users.stream().forEach( user -> {
+                user.getCompletedModules().remove(Integer.valueOf(module.getId()));
+            });
+        }
+
     }
 
-    public void removeWeekFromAllUsers(Week week, List<User>... optionalUsers){
+    public void removeWeekFromAllUsers(Week week, boolean cascadeDelete, List<User>... optionalUsers){
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
-        users.stream().forEach( user -> {
-            week.getLessons().stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), users));
-            user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
-        });
+        if(cascadeDelete){
+            users.stream().forEach( user -> {
+                week.getLessons().stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), users));
+                user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+            });
+        }else{
+            users.stream().forEach( user -> {
+                user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+            });
+        }
+
     }
 
     public void removeLessonFromAllUsers(Integer lessonId, List<User>... optionalUsers){
