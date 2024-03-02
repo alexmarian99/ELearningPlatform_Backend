@@ -50,6 +50,7 @@ public class LessonService {
         return lessonRepository.save(lesson);
     }
 
+
     @Transactional
     @Modifying
     public String deleteLesson(Integer lessonId, Integer weekId, List<User>... optionalUsers) {

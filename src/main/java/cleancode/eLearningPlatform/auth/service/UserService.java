@@ -166,21 +166,20 @@ public class UserService {
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         if(cascadeDelete){
-            System.out.println("DELETING ALL LESSONS FROM WEEK");
-            users.forEach(user -> {
-                user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-            });
-        }else{
+            System.out.println("DELETING ALL LESSONS FROM USERS");
+            users.forEach(user -> user.getCompletedLessons().remove(Integer.valueOf(lessonId)));
+        } else {
             System.out.println("DELETE ONE AND CHECK THE STATUS FURTHER");
-            users.forEach(user -> {
-                if(user.getCompletedLessons().contains(lessonId) ) {
+            for (User user : users) {
+                if (user.getCompletedLessons().contains(lessonId)) {
                     user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-                    System.out.println("CONTIANS");
-                }else{
-                    System.out.println("DOSENT CONATAIN");
-                    modifyWeekStatusAfterLessonDelete(lessonId, weekId, user);
+
+                    System.out.println("Lesson removed from user: " + user.getUsername());
+                } else {
+                    System.out.println("Lesson not found for user: " + user.getUsername());
+//                    modifyWeekStatusAfterLessonDelete(lessonId, weekId, user);
                 }
-            });
+            }
         }
     }
 
