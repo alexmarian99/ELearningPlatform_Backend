@@ -10,6 +10,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -40,13 +41,12 @@ public class WeekService {
         return weekRepository.save(week);
     }
 
-    @Transactional
     @Modifying
     public String deleteWeekById(int weekId, List<User>... optionalUsers){
         Week deletedWeek = weekRepository.findById(weekId).orElse(null);
         List<User> users = optionalUsers.length == 0 ? userRepository.findAll() : optionalUsers[0];
 
-        userService.removeWeekFromAllUsers(deletedWeek, true, users);
+        userService.removeWeekFromAllUsers(deletedWeek, false, false ,users);
 
         weekRepository.delete(deletedWeek);
         System.out.println("DELETE WEEK " + weekId + "_________________________________________________");

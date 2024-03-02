@@ -3,6 +3,7 @@ package cleancode.eLearningPlatform.modulesAndLessons.controller;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.service.WeekService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

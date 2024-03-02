@@ -64,26 +64,6 @@ public class UserService {
         return user;
     }
 
-    public Response addOrRemoveStatusOnDelete(Integer lessonId, User user){
-        user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-        List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
-        long completedLessonsAfter = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
-
-        System.out.println("STATUS MODIFIED ---------------------");
-        return null;
-
-//        if(lessons.size() - completedLessonsBefore == 1 && completedLessonsAfter == lessons.size() -1){
-//            System.out.println("ADD WEEK FROM DELETE -> " + weekId);
-//            user.getCompletedWeeks().add(weekId);
-//            checkAndModifyModuleStatus(user, weekId, status);
-//        }
-//        if(completedLessonsAfter == 0 && completedLessonsBefore == 0){
-//            System.out.println("REMOVE WEEK FROM DELETE -> " + weekId);
-//            user.getCompletedWeeks().remove(Integer.valueOf(weekId));
-//            checkAndModifyModuleStatus(user, weekId, status);
-//        }
-    }
-
 
     public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status) {
         User user = userRepository.findById(userId).orElse(null);
@@ -110,7 +90,7 @@ public class UserService {
         return Response.builder().response("ok").build();
     }
 
-    public void checkAndModifyModuleStatus(User user, int weekId, Status status){
+    private void checkAndModifyModuleStatus(User user, int weekId, Status status){
         List<Week> restOfWeeks = weekRepository.getRestOfWeeks(weekId);
         long completedWeeksBefore = restOfWeeks.stream().filter(week -> user.getCompletedWeeks().contains( week.getId())).count();
         int moduleId = weekRepository.getModuleIdFromWeek(weekId);
@@ -126,21 +106,12 @@ public class UserService {
     }
 
 
-    //to replace and delete
-    public void removeOrAddWeekFromAllUser(Integer weekId) {
-        List<User> users = userRepository.findAll();
-        users.stream().forEach(user -> {
-            user.getCompletedWeeks().remove(Integer.valueOf(weekId));
-            userRepository.save(user);
-        });
-    }
-
     public void removeModuleFromAllUsers(Module module ,boolean cascadeDelete, List<User>... optionalUsers){
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         if(cascadeDelete){
             users.stream().forEach( user -> {
-                module.getWeeks().stream().forEach(week -> removeWeekFromAllUsers(week, true, users));
+                module.getWeeks().stream().forEach(week -> removeWeekFromAllUsers(week, true, false ,  users));
                 user.getCompletedModules().remove(Integer.valueOf(module.getId()));
             });
         }else{
@@ -151,26 +122,95 @@ public class UserService {
 
     }
 
-    public void removeWeekFromAllUsers(Week week, boolean cascadeDelete, List<User>... optionalUsers){
+    public void removeWeekFromAllUsers(Week week, boolean cascadeDelete, boolean removeJustAllWeeksStatus, List<User>... optionalUsers){
+        List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
+
+        if(removeJustAllWeeksStatus){
+            // HERE WE ARE REMOVING JUST THE WEEK STATUS, THIS HAPPENS WHEN A NEW LESSON ITS ADDED AND THE WEEK RETURNS TO TODO
+            System.out.println("// HERE WE ARE REMOVING JUST THE WEEK STATUS, THIS HAPPENS WHEN A NEW LESSON ITS ADDED AND THE WEEK RETURNS TO TODO");
+            users.stream().forEach( user -> {
+                user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+            });
+        }else{
+            // HERE WE ARE DELETING THE WHOLE WEEK WITH ALL HER RECORDS
+            System.out.println(" // HERE WE ARE DELETING THE WHOLE WEEK WITH ALL HER RECORDS");
+            List<Lesson> lessonsOfWeek = weekRepository.getLessonsByWeekId(week.getId());
+            if(cascadeDelete){
+                // THIS MEANS THAT A MODULE IS DELETED AND ALL THE WEEKS WILL BE DELETED SO WE WON'T NEED TO CHECK FURTHER STATUS
+                users.stream().forEach( user -> {
+                    lessonsOfWeek.stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), week.getId(),true , users));
+                    user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+
+                });
+            }else{
+                // THIS MEANS THAT JUST ONE WEEK IS DELETED AND  WE NEED TO CHECK FURTHER STATUS FOR THE MODULE
+                users.stream().forEach( user -> {
+                    lessonsOfWeek.stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), week.getId(),true , users));
+                    user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+                     modifyModuleStatusAfterWeekDeleteOrAdd(week.getId(), user, Status.TODO);
+
+                });
+            }
+        }
+
+    }
+
+    public void removeLessonFromAllUsers(Integer lessonId, Integer weekId, boolean cascadeDelete, List<User>... optionalUsers){
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         if(cascadeDelete){
+            System.out.println("DELETING ALL LESSONS FROM WEEK");
             users.stream().forEach( user -> {
-                week.getLessons().stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), users));
-                user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+                user.getCompletedLessons().remove(Integer.valueOf(lessonId));
             });
         }else{
+            System.out.println("DELETE ONE AND CHECK THE STATUS FURTHER");
             users.stream().forEach( user -> {
-                user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
+                if(user.getCompletedLessons().contains(lessonId) ) {
+                    user.getCompletedLessons().remove(Integer.valueOf(lessonId));
+                    System.out.println("CONTIANS");
+                }else{
+                    System.out.println("DOSENT CONATAIN");
+                    modifyWeekStatusAfterLessonDelete(lessonId, weekId, user);
+                }
             });
         }
-
     }
 
-    public void removeLessonFromAllUsers(Integer lessonId, List<User>... optionalUsers){
-        List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
+    private void modifyWeekStatusAfterLessonDelete(Integer lessonId, Integer weekId, User user){
+        List<Lesson> lessonsOfWeek = lessonRepository.getRestOfLessons(lessonId);
+        List<Integer> completedLessons = user.getCompletedLessons();
+        long completedLessonsAfter = lessonsOfWeek.stream().filter(lesson -> completedLessons.contains(lesson.getId())).count();
 
-        users.stream().forEach( user -> user.getCompletedLessons().remove(Integer.valueOf(lessonId)));
+        if(lessonsOfWeek.size() - completedLessonsAfter == 1){
+            user.getCompletedWeeks().add(weekId);
+           // modifyModuleStatusAfterWeekDeleteOrAdd(weekId, user, Status.DONE);
+        }
+    }
+
+
+    public void modifyModuleStatusAfterWeekDeleteOrAdd( Integer weekId, User user ,Status addOrRemoveWeek){
+       List<Week> weeksOfModule = weekRepository.getRestOfWeeks(weekId);
+        List<Integer> completedWeeks = user.getCompletedWeeks();
+        long completedWeeksAfter = weeksOfModule.stream().filter(week -> completedWeeks.contains(week.getId())).count();
+
+        System.out.println("WEEKS OF MODULES SIZE -> " + weeksOfModule.size());
+        System.out.println("COMPLETED WEEKS -> " + completedWeeksAfter ) ;
+        System.out.println("ARE EQAL -> " + (weeksOfModule.size() == completedWeeksAfter));
+
+        if(addOrRemoveWeek.equals(Status.TODO) && weeksOfModule.size() - completedWeeksAfter == 1){
+            System.out.println("ADD MODULE FROM REMOVE WEEK");
+            user.getCompletedModules().add(weekRepository.getModuleIdFromWeek(weekId));
+        }else if(addOrRemoveWeek.equals(Status.DONE) && weeksOfModule.size() == completedWeeksAfter){
+            System.out.println("ADD MODULE FROM ADD WEEK");
+            user.getCompletedModules().add(weekRepository.getModuleIdFromWeek(weekId));
+        }
+
+//        if((addOrRemoveWeek.equals(Status.TODO) && weeksOfModule.size() - completedWeeksAfter == 1)
+//                || (addOrRemoveWeek.equals(Status.DONE) && weeksOfModule.size() == completedWeeksAfter)){
+//            user.getCompletedModules().add(weekRepository.getModuleIdFromWeek(weekId));
+//            userRepository.save(user);
+//        }
     }
 
     public CompletedStuff getCompletedStuff(Integer userId) {

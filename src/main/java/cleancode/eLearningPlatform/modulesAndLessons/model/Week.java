@@ -30,7 +30,7 @@ public class Week {
     private Module module;
 
     @JsonBackReference(value = "lessons")
-    @OneToMany(mappedBy = "week",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "week",fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
     private List<Lesson> lessons = new ArrayList<>();
 
     @Override

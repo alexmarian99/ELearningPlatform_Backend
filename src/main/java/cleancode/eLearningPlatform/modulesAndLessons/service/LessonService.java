@@ -44,7 +44,7 @@ public class LessonService {
         Module module = moduleRepository.findById(lesson.getWeek().getModule().getId()).orElse(null);
         Week week = weekRepository.findById(lesson.getWeek().getId()).orElse(null);
 
-        userService.removeWeekFromAllUsers(week , false );
+        userService.removeWeekFromAllUsers(week , false, true );
         userService.removeModuleFromAllUsers(module, false);
 
         return lessonRepository.save(lesson);
@@ -55,7 +55,7 @@ public class LessonService {
     public String deleteLesson(Integer lessonId, Integer weekId, List<User>... optionalUsers) {
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
-        userService.removeLessonFromAllUsers(lessonId, users);
+        userService.removeLessonFromAllUsers(lessonId, weekId , false ,users);
 
         lessonRepository.deleteById(lessonId);
         System.out.println("DELETE LESSON -> " + lessonId + " ---------------------------------------------");

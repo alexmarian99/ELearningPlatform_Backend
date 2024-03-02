@@ -13,4 +13,5 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
     @Query("SELECT l.week.lessons FROM Lesson l WHERE l.id = :lessonId")
     List<Lesson> getRestOfLessons(int lessonId);
+
 }
