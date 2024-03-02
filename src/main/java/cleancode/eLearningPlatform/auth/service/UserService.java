@@ -186,12 +186,13 @@ public class UserService {
 
     private void modifyWeekStatusAfterLessonDelete(Integer lessonId, Integer weekId, User user){
         List<Lesson> lessonsOfWeek = lessonRepository.getRestOfLessons(lessonId);
+//        List<Lesson> lessonsOfWeek = weekRepository.getLessonsByWeekId(weekId);
         List<Integer> completedLessons = user.getCompletedLessons();
         long completedLessonsAfter = lessonsOfWeek.stream().filter(lesson -> completedLessons.contains(lesson.getId())).count();
 
         if(lessonsOfWeek.size() - completedLessonsAfter == 1){
             user.getCompletedWeeks().add(weekId);
-           // modifyModuleStatusAfterWeekDeleteOrAdd(weekId, user, Status.DONE);
+            modifyModuleStatusAfterWeekDeleteOrAdd(weekId, user, Status.DONE);
         }
     }
 

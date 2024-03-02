@@ -57,7 +57,10 @@ public class LessonService {
 
         userService.removeLessonFromAllUsers(lessonId, weekId , false ,users);
 
-        lessonRepository.deleteById(lessonId);
+//        lessonRepository.deleteById(lessonId);
+        lessonRepository.deleteLessonById(lessonId);
+
+
         System.out.println("DELETE LESSON -> " + lessonId + " ---------------------------------------------");
         return "Deleted Lesson " + lessonId;
     }
