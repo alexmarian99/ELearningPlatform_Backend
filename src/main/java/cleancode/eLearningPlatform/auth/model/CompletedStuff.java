@@ -13,9 +13,7 @@ import java.util.List;
 public class CompletedStuff {
     private List<Integer> completedLessons = new ArrayList<>();
     private List<Integer> completedWeeks = new ArrayList<>();
+    private List<Integer> completedModules = new ArrayList<>();
 
-    public CompletedStuff(List<Integer> completedLessons, List<Integer> completedWeeks) {
-        this.completedLessons = completedLessons;
-        this.completedWeeks = completedWeeks;
-    }
+
 }

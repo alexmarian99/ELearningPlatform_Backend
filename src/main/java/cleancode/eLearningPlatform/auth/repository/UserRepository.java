@@ -21,6 +21,9 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query("SELECT u.completedWeeks FROM User u WHERE u.id = :userId")
     List<Integer> getJustWeeks(Integer userId);
 
+    @Query("SELECT u.completedModules FROM User u WHERE u.id = :userId")
+    List<Integer> getJustModules(Integer userId);
+
 //    @Query("SELECT u.completedLessons, u.completedWeeks FROM User u WHERE u.id = :userId")
 //    List<Object[]> getLessonsAndWeeks(Integer userId);
 //

@@ -46,6 +46,10 @@ public class User implements UserDetails {
     @CollectionTable(name = "completed_week", joinColumns = @JoinColumn(name = "user_id"))
     private List<Integer> completedWeeks = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "completed_module", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Integer> completedModules = new ArrayList<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

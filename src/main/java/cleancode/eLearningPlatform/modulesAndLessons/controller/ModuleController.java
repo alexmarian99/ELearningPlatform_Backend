@@ -1,6 +1,7 @@
 package cleancode.eLearningPlatform.modulesAndLessons.controller;
 
 
+import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.service.ModuleService;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,10 @@ private final ModuleService moduleService;
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteModule(@RequestParam (name = "moduleId") int moduleId){
+    public ResponseEntity<Response> deleteModule(@RequestParam (name = "moduleId") int moduleId){
 //        return ResponseEntity.ok( moduleService.deleteModule(moduleId));
         moduleService.deleteModule(moduleId);
-        return ResponseEntity.ok("Deleted module " + moduleId);
+        return ResponseEntity.ok(Response.builder().response("Deleted module " + moduleId).build());
     }
 
     @PutMapping("/{moduleId}")
