@@ -60,17 +60,20 @@ public class UserService {
 
     public User getUserWithToken(String authHeader) {
         String token = authHeader.substring(7);
-        User user = userRepository.findByUsername(jwtService.extractUsername(token)).orElse(null);
-        return user;
+        return userRepository.findByUsername(jwtService.extractUsername(token)).orElse(null);
     }
 
 
     public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status) {
         User user = userRepository.findById(userId).orElse(null);
         List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
-        long completedLessonsBefore = lessons.stream().filter(lesson -> user.getCompletedLessons().contains(lesson.getId())).count();
+        long completedLessonsBefore = lessons.stream().filter(lesson -> {
+            assert user != null;
+            return user.getCompletedLessons().contains(lesson.getId());
+        }).count();
 
             if (status.equals(Status.DONE)) {
+                assert user != null;
                 user.getCompletedLessons().add(lessonId);
                 if (completedLessonsBefore + 1 == lessons.size()) {
                     System.out.println("ADD WEEK FROM STATUS -> " + weekId);
@@ -78,6 +81,7 @@ public class UserService {
                     checkAndModifyModuleStatus(user, weekId, status);
                 }
             } else {
+                assert user != null;
                 user.getCompletedLessons().remove(Integer.valueOf(lessonId));
                 if (lessons.size() - completedLessonsBefore == 0) {
                     System.out.println("REMOVE WEEK FROM STATUS -> " + weekId);
@@ -106,29 +110,31 @@ public class UserService {
     }
 
 
-    public void removeModuleFromAllUsers(Module module ,boolean cascadeDelete, List<User>... optionalUsers){
+    @SafeVarargs
+    public final void removeModuleFromAllUsers(Module module, boolean cascadeDelete, List<User>... optionalUsers){
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         if(cascadeDelete){
-            users.stream().forEach( user -> {
-                module.getWeeks().stream().forEach(week -> removeWeekFromAllUsers(week, true, false ,  users));
+            users.forEach(user -> {
+                module.getWeeks().forEach(week -> removeWeekFromAllUsers(week, true, false ,  users));
                 user.getCompletedModules().remove(Integer.valueOf(module.getId()));
             });
         }else{
-            users.stream().forEach( user -> {
+            users.forEach(user -> {
                 user.getCompletedModules().remove(Integer.valueOf(module.getId()));
             });
         }
 
     }
 
-    public void removeWeekFromAllUsers(Week week, boolean cascadeDelete, boolean removeJustAllWeeksStatus, List<User>... optionalUsers){
+    @SafeVarargs
+    public final void removeWeekFromAllUsers(Week week, boolean cascadeDelete, boolean removeJustAllWeeksStatus, List<User>... optionalUsers){
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         if(removeJustAllWeeksStatus){
             // HERE WE ARE REMOVING JUST THE WEEK STATUS, THIS HAPPENS WHEN A NEW LESSON ITS ADDED AND THE WEEK RETURNS TO TODO
             System.out.println("// HERE WE ARE REMOVING JUST THE WEEK STATUS, THIS HAPPENS WHEN A NEW LESSON ITS ADDED AND THE WEEK RETURNS TO TODO");
-            users.stream().forEach( user -> {
+            users.forEach(user -> {
                 user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
             });
         }else{
@@ -137,15 +143,15 @@ public class UserService {
             List<Lesson> lessonsOfWeek = weekRepository.getLessonsByWeekId(week.getId());
             if(cascadeDelete){
                 // THIS MEANS THAT A MODULE IS DELETED AND ALL THE WEEKS WILL BE DELETED SO WE WON'T NEED TO CHECK FURTHER STATUS
-                users.stream().forEach( user -> {
-                    lessonsOfWeek.stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), week.getId(),true , users));
+                users.forEach(user -> {
+                    lessonsOfWeek.forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), week.getId(),true , users));
                     user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
 
                 });
             }else{
                 // THIS MEANS THAT JUST ONE WEEK IS DELETED AND  WE NEED TO CHECK FURTHER STATUS FOR THE MODULE
-                users.stream().forEach( user -> {
-                    lessonsOfWeek.stream().forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), week.getId(),true , users));
+                users.forEach(user -> {
+                    lessonsOfWeek.forEach(lesson -> removeLessonFromAllUsers(lesson.getId(), week.getId(),true , users));
                     user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
                      modifyModuleStatusAfterWeekDeleteOrAdd(week.getId(), user, Status.TODO);
 
@@ -155,17 +161,18 @@ public class UserService {
 
     }
 
-    public void removeLessonFromAllUsers(Integer lessonId, Integer weekId, boolean cascadeDelete, List<User>... optionalUsers){
+    @SafeVarargs
+    public final void removeLessonFromAllUsers(Integer lessonId, Integer weekId, boolean cascadeDelete, List<User>... optionalUsers){
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         if(cascadeDelete){
             System.out.println("DELETING ALL LESSONS FROM WEEK");
-            users.stream().forEach( user -> {
+            users.forEach(user -> {
                 user.getCompletedLessons().remove(Integer.valueOf(lessonId));
             });
         }else{
             System.out.println("DELETE ONE AND CHECK THE STATUS FURTHER");
-            users.stream().forEach( user -> {
+            users.forEach(user -> {
                 if(user.getCompletedLessons().contains(lessonId) ) {
                     user.getCompletedLessons().remove(Integer.valueOf(lessonId));
                     System.out.println("CONTIANS");
