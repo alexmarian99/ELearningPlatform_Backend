@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +45,8 @@ public class LessonService {
         Module module = moduleRepository.findById(lesson.getWeek().getModule().getId()).orElse(null);
         Week week = weekRepository.findById(lesson.getWeek().getId()).orElse(null);
 
-        userService.removeWeekFromAllUsers(week , false, true );
-        userService.removeModuleFromAllUsers(module, false);
+        userService.removeWeekFromAllUsers(week , false, true, new ArrayList<>() );
+        userService.removeModuleFromAllUsers(module, false, new ArrayList<>());
 
         return lessonRepository.save(lesson);
     }
@@ -56,9 +57,11 @@ public class LessonService {
     public String deleteLesson(Integer lessonId, Integer weekId, List<User>... optionalUsers) {
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
-        userService.removeLessonFromAllUsers(lessonId, weekId , false ,users);
 
         lessonRepository.deleteById(lessonId);
+        userService.removeLessonFromAllUsers(lessonId, weekId , false ,users);
+
+
         System.out.println("DELETE LESSON -> " + lessonId + " ---------------------------------------------");
         return "Deleted Lesson " + lessonId;
     }

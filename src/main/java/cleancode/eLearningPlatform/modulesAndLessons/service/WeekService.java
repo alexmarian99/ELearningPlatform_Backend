@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,18 +37,17 @@ public class WeekService {
     @Modifying
     public Week saveWeek(Week week){
         Module module = moduleRepository.findById(week.getModule().getId()).orElse(null);
-        userService.removeModuleFromAllUsers(module, false);
+        userService.removeModuleFromAllUsers(module, false, new ArrayList<>());
 
         return weekRepository.save(week);
     }
 
     @Modifying
-    public String deleteWeekById(int weekId, List<User>... optionalUsers){
+    public String deleteWeekById(int weekId){
         Week deletedWeek = weekRepository.findById(weekId).orElse(null);
-        List<User> users = optionalUsers.length == 0 ? userRepository.findAll() : optionalUsers[0];
+        List<User> users =  userRepository.findAll();
 
         userService.removeWeekFromAllUsers(deletedWeek, false, false ,users);
-
         weekRepository.delete(deletedWeek);
         System.out.println("DELETE WEEK " + weekId + "_________________________________________________");
         return "Deleted Week " +weekId+ " Succesfull";
