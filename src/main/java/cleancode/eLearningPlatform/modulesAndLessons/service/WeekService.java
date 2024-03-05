@@ -2,13 +2,18 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
+import cleancode.eLearningPlatform.auth.service.UserService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
+import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,8 +21,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WeekService {
     private final WeekRepository weekRepository;
-    private final LessonService lessonService;
+    private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public Week findWeekById(int weekId){
         return weekRepository.findById(weekId).orElse(null);
@@ -26,24 +32,25 @@ public class WeekService {
     public List<Week> findAllWeeksByModuleId(int moduleId){
         return weekRepository.findAllByModuleIdOrderByNumber(moduleId);
     }
-    public Week saveWeek(Week week){
-        return weekRepository.save(week);
-    }
 
     @Transactional
     @Modifying
+    public Week saveWeek(Week week){
+        Module module = moduleRepository.findById(week.getModule().getId()).orElse(null);
+        userService.removeModuleFromAllUsers(module, false, new ArrayList<>());
+
+        return weekRepository.save(week);
+    }
+
+    @Modifying
     public String deleteWeekById(int weekId){
         Week deletedWeek = weekRepository.findById(weekId).orElse(null);
-        List<User> users = userRepository.findAll();
-        users.stream().forEach(user -> {
-                                 user.getCompletedWeeks().remove(Integer.valueOf(weekId));
-                                userRepository.save(user);
-                                });
+        List<User> users =  userRepository.findAll();
 
-        deletedWeek.getLessons().stream().forEach(lesson -> lessonService.deleteLesson(lesson.getId()));
-
+        userService.removeWeekFromAllUsers(deletedWeek, false, false ,users);
         weekRepository.delete(deletedWeek);
-        return "Deleted Week " +weekId+ " Succesfull";
+        System.out.println("DELETE WEEK " + weekId + "_________________________________________________");
+        return "Deleted Week " +weekId + " Succesfull";
     }
 
     public Week updateWeek(int weekId, Week updatedWeek){

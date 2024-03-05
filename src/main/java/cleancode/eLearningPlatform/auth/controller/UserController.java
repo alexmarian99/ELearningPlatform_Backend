@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/users")
@@ -23,8 +21,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/completedStuff")
-    public ResponseEntity<CompletedStuff> getCompletedStuffByUserId(@PathVariable Integer userId){
-        return ResponseEntity.ok(userService.getCompletedStuff(userId));
+    public ResponseEntity<CompletedItemsResponse> getCompletedStuffByUserId(@PathVariable Integer userId){
+        return ResponseEntity.ok(userService.getCompletedItems(userId));
     }
 
     @PostMapping("/auth/register")
