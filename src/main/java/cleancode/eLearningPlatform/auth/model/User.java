@@ -1,6 +1,5 @@
 package cleancode.eLearningPlatform.auth.model;
 
-import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;

@@ -50,7 +50,7 @@ public class WeekService {
         userService.removeWeekFromAllUsers(deletedWeek, false, false ,users);
         weekRepository.delete(deletedWeek);
         System.out.println("DELETE WEEK " + weekId + "_________________________________________________");
-        return "Deleted Week " +weekId+ " Succesfull";
+        return "Deleted Week " +weekId + " Succesfull";
     }
 
     public Week updateWeek(int weekId, Week updatedWeek){
