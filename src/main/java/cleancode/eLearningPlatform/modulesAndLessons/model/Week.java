@@ -29,7 +29,6 @@ public class Week {
     @ManyToOne(fetch=FetchType.LAZY)
     private Module module;
 
-    @JsonBackReference(value = "lessons")
     @OneToMany(mappedBy = "week",fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
     private List<Lesson> lessons = new ArrayList<>();
 
