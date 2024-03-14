@@ -32,8 +32,9 @@ public class LessonService {
     }
 
     public List<Lesson> findLessonByWeekId(int weekId){
-        return lessonRepository.findAllByWeekIdOrderByWeek(weekId);
+        return lessonRepository.findAllByWeekIdOrderByOptional(weekId);
     }
+
 
     public Lesson findLessonById(int lessonId){
         return lessonRepository.findById(lessonId).orElse(null);
