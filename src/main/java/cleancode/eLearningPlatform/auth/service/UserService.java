@@ -231,11 +231,21 @@ public class UserService {
 //        }
     }
 
-    public CompletedItemsResponse getCompletedItems(Integer userId) {
-        List<Integer> lessons = userRepository.getJustLessons(userId);
-        List<Integer> weeks = userRepository.getJustWeeks(userId);
-        List<Integer> modules = userRepository.getJustModules(userId);
+    public CompletedItemsResponse getCompletedItems(Long userId) {
+//        List<Integer> lessons = userRepository.getJustLessons(userId);
+//        List<Integer> weeks = userRepository.getJustWeeks(userId);
+//        List<Integer> modules = userRepository.getJustModules(userId);
+//        List<Integer> katas = userRepository.getJustKatas(userId);
+        User user = userRepository.findById(userId).orElse(null);
 
-        return CompletedItemsResponse.builder().completedLessons(lessons).completedWeeks(weeks).completedModules(modules).build();
+        return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).completedKatas(user.getCompletedKatas()).build();
+    }
+
+    public Response addOrRemoveKataFromUser(Long userId,int kataId,Status status) {
+        User user = userRepository.findById(userId).orElse(null);
+        assert user != null;
+        user.getCompletedKatas().add(kataId);
+        userRepository.save(user);
+        return Response.builder().response("User has been updated").build();
     }
 }

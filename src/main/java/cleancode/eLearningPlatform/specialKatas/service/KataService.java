@@ -1,8 +1,10 @@
 package cleancode.eLearningPlatform.specialKatas.service;
 
+import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.repository.KataRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,5 +35,11 @@ public class KataService {
     public boolean kataExists(String title, String kataLink) {
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(title, kataLink);
         return existingKata.isPresent();
+    }
+
+
+    public Response deleteKata(int id) {
+        kataRepository.deleteById(id);
+       return Response.builder().response("Kata deleted").build();
     }
 }

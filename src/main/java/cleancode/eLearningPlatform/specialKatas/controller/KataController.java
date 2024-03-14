@@ -1,5 +1,6 @@
     package cleancode.eLearningPlatform.specialKatas.controller;
 
+    import cleancode.eLearningPlatform.auth.model.Response;
     import cleancode.eLearningPlatform.specialKatas.model.Kata;
     import cleancode.eLearningPlatform.specialKatas.service.KataService;
     import lombok.RequiredArgsConstructor;
@@ -34,5 +35,11 @@
         @GetMapping
         public List<Kata> getAllKatas() {
             return kataService.findAllKatas();
+        }
+
+        @DeleteMapping("/{kataId}")
+        public ResponseEntity<Response> deleteKata(@PathVariable int kataId) {
+
+            return  ResponseEntity.ok(kataService.deleteKata(kataId));
         }
     }

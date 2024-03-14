@@ -7,4 +7,7 @@ import java.util.Optional;
 
 public interface KataRepository extends JpaRepository<Kata, Integer> {
     Optional<Kata> findByTitleAndKataLink(String title, String kataLink);
+
+
+
 }

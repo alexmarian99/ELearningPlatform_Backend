@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/completedStuff")
-    public ResponseEntity<CompletedItemsResponse> getCompletedStuffByUserId(@PathVariable Integer userId){
+    public ResponseEntity<CompletedItemsResponse> getCompletedStuffByUserId(@PathVariable Long userId){
         return ResponseEntity.ok(userService.getCompletedItems(userId));
     }
 
@@ -38,6 +38,11 @@ public class UserController {
     @PatchMapping()
     public ResponseEntity<Response> addOrRemoveLessonFromUser(@RequestParam (name = "userId") Long userId, @RequestParam (name = "lessonId") Integer lessonId , @RequestParam (name = "weekId") Integer weekId ,  @RequestBody Status status){
         return ResponseEntity.ok(userService.addOrRemoveLessonFromUser(userId, lessonId,weekId, status));
+    }
+
+    @PatchMapping("/addCompleteKata")
+    public ResponseEntity<Response> addOrRemoveKataFromUser(@RequestParam (name = "userId") Long userId, @RequestParam (name = "kataId") Integer kataId ){
+        return ResponseEntity.ok(userService.addOrRemoveKataFromUser(userId,kataId,Status.DONE));
     }
 
 }
