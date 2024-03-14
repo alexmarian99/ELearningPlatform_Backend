@@ -69,15 +69,18 @@ public class UserService {
     public Response addOrRemoveLessonFromUser(Long userId, Integer lessonId, Integer weekId, Status status) {
         User user = userRepository.findById(userId).orElse(null);
         List<Lesson> lessons = lessonRepository.getRestOfLessons(lessonId);
+        //Lesson currentLesson = lessonRepository.findById(lessonId).orElse(null);
         long completedLessonsBefore = lessons.stream().filter(lesson -> {
             assert user != null;
             return user.getCompletedLessons().contains(lesson.getId());
         }).count();
 
+       // System.out.println(currentLesson.isOptional() + " is OPtionalll ????? ");
+
             if (status.equals(Status.DONE)) {
                 assert user != null;
                 user.getCompletedLessons().add(lessonId);
-                if (completedLessonsBefore + 1 == lessons.size()) {
+                if (completedLessonsBefore + 1 == lessons.size() ) {
                     System.out.println("ADD WEEK FROM STATUS -> " + weekId);
                     user.getCompletedWeeks().add(weekId);
                     checkAndModifyModuleStatus(user, weekId, status);
@@ -85,7 +88,7 @@ public class UserService {
             } else {
                 assert user != null;
                 user.getCompletedLessons().remove(Integer.valueOf(lessonId));
-                if (lessons.size() - completedLessonsBefore == 0) {
+                if (lessons.size() - completedLessonsBefore == 0  ) {
                     System.out.println("REMOVE WEEK FROM STATUS -> " + weekId);
                     user.getCompletedWeeks().remove(Integer.valueOf(weekId));
                     checkAndModifyModuleStatus(user, weekId, status);

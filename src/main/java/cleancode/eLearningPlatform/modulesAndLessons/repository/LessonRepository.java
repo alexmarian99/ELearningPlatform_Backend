@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
-    List<Lesson> findAllByWeekIdOrderByWeek(int weekId);
+    List<Lesson> findAllByWeekIdOrderByOptional(int weekId);
 
     @Query("SELECT l.week.lessons FROM Lesson l WHERE l.id = :lessonId")
     List<Lesson> getRestOfLessons(int lessonId);

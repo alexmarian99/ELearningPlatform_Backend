@@ -21,6 +21,7 @@ public class Lesson {
     private String description;
 
     private String gitHubLink;
+    private boolean optional;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,6 +36,8 @@ public class Lesson {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", gitHubLink='" + gitHubLink + '\'' +
+                ", optional=" + optional +
+                ", week=" + week +
                 '}';
     }
 }

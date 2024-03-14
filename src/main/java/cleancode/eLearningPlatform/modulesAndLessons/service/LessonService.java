@@ -32,8 +32,9 @@ public class LessonService {
     }
 
     public List<Lesson> findLessonByWeekId(int weekId){
-        return lessonRepository.findAllByWeekIdOrderByWeek(weekId);
+        return lessonRepository.findAllByWeekIdOrderByOptional(weekId);
     }
+
 
     public Lesson findLessonById(int lessonId){
         return lessonRepository.findById(lessonId).orElse(null);
@@ -57,10 +58,8 @@ public class LessonService {
     public String deleteLesson(Integer lessonId, Integer weekId, List<User>... optionalUsers) {
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
-
         lessonRepository.deleteById(lessonId);
         userService.removeLessonFromAllUsers(lessonId, weekId , false ,users);
-
 
         System.out.println("DELETE LESSON -> " + lessonId + " ---------------------------------------------");
         return "Deleted Lesson " + lessonId;
@@ -76,6 +75,7 @@ public class LessonService {
             existingLesson.setName(updatedLesson.getName());
             existingLesson.setDescription(updatedLesson.getDescription());
             existingLesson.setGitHubLink(updatedLesson.getGitHubLink());
+            existingLesson.setOptional(updatedLesson.isOptional());
 
             return lessonRepository.save(existingLesson);
         }else{
