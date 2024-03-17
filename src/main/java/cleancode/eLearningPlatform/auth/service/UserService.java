@@ -10,6 +10,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
+import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -250,5 +251,14 @@ public class UserService {
         user.getCompletedKatas().add(kataId);
         userRepository.save(user);
         return Response.builder().response("User has been updated").build();
+    }
+
+
+    public void removeKataFromAllUsers(int kataId){
+        List<User> users = userRepository.findAll();
+        for (User user : users){
+            user.getCompletedKatas().remove(Integer.valueOf(kataId));
+        }
+
     }
 }
