@@ -43,6 +43,7 @@ public class UserService {
                 .lastName(registerRequest.getLastName())
                 .username(registerRequest.getUsername())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .codeWarsUsername(registerRequest.getCodeWarsUsername())
                 .role(Role.USER)
                 .build();
 

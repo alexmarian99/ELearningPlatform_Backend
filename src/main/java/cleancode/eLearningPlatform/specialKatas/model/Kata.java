@@ -31,8 +31,6 @@ public class Kata {
     @Max(8)
     private int level;
 
-    @Enumerated(EnumType.STRING)
-    private Language language;
 
     @ElementCollection(targetClass = Category.class,fetch = FetchType.EAGER)
     @CollectionTable(name = "kata_categories", joinColumns = @JoinColumn(name = "kata_id"))
