@@ -3,12 +3,17 @@ package cleancode.eLearningPlatform.specialKatas.service;
 import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
+import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
+import cleancode.eLearningPlatform.specialKatas.model.PaginationRequest;
 import cleancode.eLearningPlatform.specialKatas.repository.KataRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +24,17 @@ public class KataService {
     private final KataRepository kataRepository;
     private final UserService userService;
 
-    public List<Kata> findAllKatas(){
-        return kataRepository.findAll();
+    public KataPaginationResponse findAllKatas(PaginationRequest paginationRequest){
+        System.out.println(paginationRequest.toString());
+        System.out.println("______________________________________");
+        Pageable pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getNumberOfItems());
+
+        return KataPaginationResponse
+                .builder()
+                .katas(kataRepository.getSomeKata(pageable))
+                .numberOfKatas(kataRepository.count())
+                .build();
+
     }
 
     public Kata saveKata(Kata kata) {

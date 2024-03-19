@@ -2,6 +2,8 @@
 
     import cleancode.eLearningPlatform.auth.model.Response;
     import cleancode.eLearningPlatform.specialKatas.model.Kata;
+    import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
+    import cleancode.eLearningPlatform.specialKatas.model.PaginationRequest;
     import cleancode.eLearningPlatform.specialKatas.service.KataService;
     import lombok.RequiredArgsConstructor;
     import org.springframework.http.HttpStatus;
@@ -32,9 +34,9 @@
                 return ResponseEntity.ok(savedKata);
             }
         }
-        @GetMapping
-        public List<Kata> getAllKatas() {
-            return kataService.findAllKatas();
+        @PostMapping("/getKatas")
+        public KataPaginationResponse getAllKatas(@RequestBody PaginationRequest paginationResponse) {
+            return kataService.findAllKatas(paginationResponse);
         }
 
         @DeleteMapping("/{kataId}")
