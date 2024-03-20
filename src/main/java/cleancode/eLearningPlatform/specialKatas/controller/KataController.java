@@ -8,6 +8,7 @@
     import lombok.RequiredArgsConstructor;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
+    import org.springframework.stereotype.Repository;
     import org.springframework.web.bind.annotation.*;
 
     import java.util.List;
@@ -16,10 +17,16 @@
     @RequiredArgsConstructor
     @RequestMapping("/katas")
     public class KataController {
-
         private final KataService kataService;
 
+        @GetMapping("/katasOfTheDay")
+        public ResponseEntity<List<Kata>> getKatasOfTheDay(@RequestParam boolean requestRefresh){
+            if(requestRefresh){
+                kataService.selectKataOfTheDay();
+            }
 
+            return ResponseEntity.ok(kataService.getKataOfTheDay());
+        }
 
         @PostMapping
         public ResponseEntity<Object> saveOneKata(@RequestBody Kata kata) {

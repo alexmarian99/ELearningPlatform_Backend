@@ -215,9 +215,9 @@ public class UserService {
         List<Integer> completedWeeks = user.getCompletedWeeks();
         long completedWeeksAfter = weeksOfModule.stream().filter(week -> completedWeeks.contains(week.getId())).count();
 
-        System.out.println("WEEKS OF MODULES SIZE -> " + weeksOfModule.size());
-        System.out.println("COMPLETED WEEKS -> " + completedWeeksAfter ) ;
-        System.out.println("ARE EQAL -> " + (weeksOfModule.size() == completedWeeksAfter));
+//        System.out.println("WEEKS OF MODULES SIZE -> " + weeksOfModule.size());
+//        System.out.println("COMPLETED WEEKS -> " + completedWeeksAfter ) ;
+//        System.out.println("ARE EQAL -> " + (weeksOfModule.size() == completedWeeksAfter));
 
         if(addOrRemoveWeek.equals(Status.TODO) && weeksOfModule.size() - completedWeeksAfter == 1){
             System.out.println("ADD MODULE FROM REMOVE WEEK");
@@ -228,19 +228,9 @@ public class UserService {
             user.getCompletedModules().add(weekRepository.getModuleIdFromWeek(weekId));
         }
         userRepository.save(user);
-
-//        if((addOrRemoveWeek.equals(Status.TODO) && weeksOfModule.size() - completedWeeksAfter == 1)
-//                || (addOrRemoveWeek.equals(Status.DONE) && weeksOfModule.size() == completedWeeksAfter)){
-//            user.getCompletedModules().add(weekRepository.getModuleIdFromWeek(weekId));
-//            userRepository.save(user);
-//        }
     }
 
     public CompletedItemsResponse getCompletedItems(Long userId) {
-//        List<Integer> lessons = userRepository.getJustLessons(userId);
-//        List<Integer> weeks = userRepository.getJustWeeks(userId);
-//        List<Integer> modules = userRepository.getJustModules(userId);
-//        List<Integer> katas = userRepository.getJustKatas(userId);
         User user = userRepository.findById(userId).orElse(null);
 
         return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).completedKatas(user.getCompletedKatas()).build();
@@ -249,7 +239,9 @@ public class UserService {
     public Response addOrRemoveKataFromUser(Long userId,int kataId,Status status) {
         User user = userRepository.findById(userId).orElse(null);
         assert user != null;
-        user.getCompletedKatas().add(kataId);
+        if(!user.getCompletedKatas().contains(kataId)){
+            user.getCompletedKatas().add(kataId);
+        }
         userRepository.save(user);
         return Response.builder().response("User has been updated").build();
     }

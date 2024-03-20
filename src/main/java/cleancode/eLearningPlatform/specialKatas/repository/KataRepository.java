@@ -15,5 +15,8 @@ public interface KataRepository extends JpaRepository<Kata, Integer> {
     List<Kata> getSomeKata(Pageable pageable);
 
 
+    @Query("SELECT k FROM Kata k WHERE k.level IN (:kataLevels)")
+    List<Kata> findAllByLevel(List<Integer> kataLevels);
+
 
 }
