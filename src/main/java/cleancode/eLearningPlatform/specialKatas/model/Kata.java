@@ -1,9 +1,6 @@
 package cleancode.eLearningPlatform.specialKatas.model;
 
-import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.specialKatas.enums.Category;
-import cleancode.eLearningPlatform.specialKatas.enums.Language;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
