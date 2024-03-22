@@ -1,5 +1,6 @@
 package cleancode.eLearningPlatform.specialKatas.repository;
 
+import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +21,10 @@ public interface KataRepository extends JpaRepository<Kata, Integer> {
     @Query("SELECT k FROM Kata k WHERE k.level IN (:kataLevels)")
     List<Kata> findAllByLevel(List<Integer> kataLevels);
 
+    List<Kata> findByCategoryAndLevel(Category category, int kataLevel);
 
+
+    List<Kata> findByCategory(Category category);
+
+    List<Kata> findByLevel(Integer kataLevel);
 }

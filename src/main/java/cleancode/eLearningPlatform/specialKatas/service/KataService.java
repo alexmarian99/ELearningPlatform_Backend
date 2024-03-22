@@ -1,7 +1,10 @@
 package cleancode.eLearningPlatform.specialKatas.service;
 
 import cleancode.eLearningPlatform.auth.model.Response;
+import cleancode.eLearningPlatform.auth.model.User;
+import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.auth.service.UserService;
+import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
 import cleancode.eLearningPlatform.specialKatas.model.PaginationRequest;
@@ -12,20 +15,17 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class KataService {
     private final KataRepository kataRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
     Random random = new Random();
 
     private List<Kata> kataOfTheDay = new ArrayList<>();
@@ -60,12 +60,8 @@ public class KataService {
 
     public Kata saveKata(Kata kata) {
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(kata.getTitle(), kata.getKataLink());
-        if (existingKata.isPresent()) {
-            return existingKata.get();
-        } else {
-            // Kata does not exist, save it
-            return kataRepository.save(kata);
-        }
+        // Kata does not exist, save it
+        return existingKata.orElseGet(() -> kataRepository.save(kata));
     }
 
     public boolean kataExists(String title, String kataLink) {
@@ -104,4 +100,43 @@ public class KataService {
             return kataRepository.save(kata);
         }
     }
+
+    public List<Kata> getFilteredKatas(Category category, String status, Integer kataLevel, Long userId) {
+        List<Integer> userCompletedKatasId = userRepository.findById(userId)
+                .map(User::getCompletedKatas)
+                .orElse(Collections.emptyList());
+
+        List<Kata> initialFilter;
+        if (category != null && kataLevel != null) {
+            initialFilter = kataRepository.findByCategoryAndLevel(category, kataLevel);
+        } else if (category != null) {
+            initialFilter = kataRepository.findByCategory(category);
+        } else if (kataLevel != null) {
+            initialFilter = kataRepository.findByLevel(kataLevel);
+        } else {
+            initialFilter = kataRepository.findAll(); // Fetch all katas if no filters are provided
+        }
+
+        List<Kata> finalFilter = new ArrayList<>();
+
+        for (Kata kata : initialFilter) {
+            boolean addToFilter = false;
+
+            if ("TO_DO".equals(status) && !userCompletedKatasId.contains(kata.getId())) {
+                addToFilter = true;
+            } else if ("COMPLETED".equals(status) && userCompletedKatasId.contains(kata.getId())) {
+                addToFilter = true;
+            } else if ("ALL".equals(status)) {
+                addToFilter = true;
+            }
+
+            if (addToFilter || Objects.equals(status, "null")) {
+                finalFilter.add(kata);
+            }
+        }
+
+        return finalFilter;
+    }
+
+
 }

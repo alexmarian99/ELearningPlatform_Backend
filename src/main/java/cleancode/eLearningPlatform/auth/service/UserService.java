@@ -11,6 +11,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
+import cleancode.eLearningPlatform.specialKatas.repository.KataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,7 @@ public class UserService {
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final KataRepository kataRepository;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         boolean usernameExists = userRepository.existsByUsername(registerRequest.getUsername());
@@ -79,17 +81,16 @@ public class UserService {
 
        // System.out.println(currentLesson.isOptional() + " is OPtionalll ????? ");
 
-            if (status.equals(Status.DONE)) {
-                assert user != null;
-                user.getCompletedLessons().add(lessonId);
+        assert user != null;
+        if (status.equals(Status.DONE)) {
+            user.getCompletedLessons().add(lessonId);
                 if (completedLessonsBefore + 1 == lessons.size() ) {
                     System.out.println("ADD WEEK FROM STATUS -> " + weekId);
                     user.getCompletedWeeks().add(weekId);
                     checkAndModifyModuleStatus(user, weekId, status);
                 }
             } else {
-                assert user != null;
-                user.getCompletedLessons().remove(Integer.valueOf(lessonId));
+            user.getCompletedLessons().remove(Integer.valueOf(lessonId));
                 if (lessons.size() - completedLessonsBefore == 0  ) {
                     System.out.println("REMOVE WEEK FROM STATUS -> " + weekId);
                     user.getCompletedWeeks().remove(Integer.valueOf(weekId));
@@ -119,7 +120,7 @@ public class UserService {
 
 
     public final void removeModuleFromAllUsers(Module module, boolean cascadeDelete, List<User> optionalUsers){
-        List<User> users = optionalUsers.size() > 0 ? optionalUsers : userRepository.findAll();
+        List<User> users = !optionalUsers.isEmpty() ? optionalUsers : userRepository.findAll();
 
         if(cascadeDelete){
             users.forEach(user -> {
@@ -127,23 +128,19 @@ public class UserService {
                 user.getCompletedModules().remove(Integer.valueOf(module.getId()));
             });
         }else{
-            users.forEach(user -> {
-                user.getCompletedModules().remove(Integer.valueOf(module.getId()));
-            });
+            users.forEach(user -> user.getCompletedModules().remove(Integer.valueOf(module.getId())));
         }
 
     }
 
     @Modifying
     public final void removeWeekFromAllUsers(Week week, boolean cascadeDelete, boolean removeJustAllWeeksStatus, List<User> optionalUsers){
-        List<User> users = optionalUsers.size() > 0 ? optionalUsers : userRepository.findAll();
+        List<User> users = !optionalUsers.isEmpty() ? optionalUsers : userRepository.findAll();
 
         if(removeJustAllWeeksStatus){
             // HERE WE ARE REMOVING JUST THE WEEK STATUS, THIS HAPPENS WHEN A NEW LESSON ITS ADDED AND THE WEEK RETURNS TO TODO
             System.out.println("// HERE WE ARE REMOVING JUST THE WEEK STATUS, THIS HAPPENS WHEN A NEW LESSON ITS ADDED AND THE WEEK RETURNS TO TODO");
-            users.forEach(user -> {
-                user.getCompletedWeeks().remove(Integer.valueOf(week.getId()));
-            });
+            users.forEach(user -> user.getCompletedWeeks().remove(Integer.valueOf(week.getId())));
         }else{
             // HERE WE ARE DELETING THE WHOLE WEEK WITH ALL HER RECORDS
             System.out.println(" // HERE WE ARE DELETING THE WHOLE WEEK WITH ALL HER RECORDS");
@@ -170,7 +167,7 @@ public class UserService {
 
     @Modifying
     public final void removeLessonFromAllUsers(Integer lessonId, Integer weekId, boolean cascadeDelete, List<User> optionalUsers){
-        List<User> users = optionalUsers.size() > 0 ? optionalUsers : userRepository.findAll();
+        List<User> users = !optionalUsers.isEmpty() ? optionalUsers : userRepository.findAll();
 
         System.out.println(users);
 
@@ -233,14 +230,22 @@ public class UserService {
     public CompletedItemsResponse getCompletedItems(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
 
+        assert user != null;
         return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).completedKatas(user.getCompletedKatas()).build();
     }
 
     public Response addOrRemoveKataFromUser(Long userId,int kataId,Status status) {
         User user = userRepository.findById(userId).orElse(null);
+        Kata kata = kataRepository.findById(kataId).orElse(null);
+
         assert user != null;
+        assert kata != null;
         if(!user.getCompletedKatas().contains(kataId)){
+            if (user.getRankPoints() == null){
+                user.setRankPoints(0);
+            }
             user.getCompletedKatas().add(kataId);
+            user.setRankPoints(user.getRankPoints() + (54 - (kata.getLevel()*6)));
         }
         userRepository.save(user);
         return Response.builder().response("User has been updated").build();

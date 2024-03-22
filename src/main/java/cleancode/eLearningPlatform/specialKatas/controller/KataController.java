@@ -1,6 +1,7 @@
     package cleancode.eLearningPlatform.specialKatas.controller;
 
     import cleancode.eLearningPlatform.auth.model.Response;
+    import cleancode.eLearningPlatform.specialKatas.enums.Category;
     import cleancode.eLearningPlatform.specialKatas.model.Kata;
     import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
     import cleancode.eLearningPlatform.specialKatas.model.PaginationRequest;
@@ -74,4 +75,37 @@
 
             return  ResponseEntity.ok(kataService.deleteKata(kataId));
         }
+        @GetMapping("/filtered")
+        public ResponseEntity<List<Kata>> getFilteredKatas(
+                @RequestParam(name= "category") String category,
+                @RequestParam(name = "status") String status,
+                @RequestParam(name = "difficulty") String difficulty,
+                @RequestParam (name = "userId") Long userId) {
+
+            // Convert category to Category enum, handling "null" string
+            Category categoryValue = null;
+            if (!"null".equals(category)) {
+                categoryValue = Category.valueOf(category);
+            }
+
+            // Convert difficulty to Integer, handling "null" string
+            Integer difficultyValue = null;
+            if (!"null".equals(difficulty)) {
+                difficultyValue = Integer.valueOf(difficulty);
+            }
+
+            // Call the service method to retrieve filtered katas based on the provided criteria
+            List<Kata> filteredKatas = kataService.getFilteredKatas(categoryValue, status, difficultyValue, userId);
+
+            // Check if any katas were found based on the filter criteria
+            if (filteredKatas.isEmpty()) {
+                return ResponseEntity.noContent().build(); // Return 204 No Content if no katas match the criteria
+            } else {
+                return ResponseEntity.ok(filteredKatas); // Return the filtered katas with status 200 OK
+            }
+        }
+
+
+
+
     }
