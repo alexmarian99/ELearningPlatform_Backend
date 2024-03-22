@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -88,5 +89,19 @@ public class KataService {
         }
 
         return result;
+    }
+
+    public Kata getKataById(int kataId) {
+        return kataRepository.findById(kataId).orElse(null);
+    }
+
+    public Kata editKata(Kata kata) {
+        boolean kataExists = kataRepository.existsByTitle(kata.getTitle());
+
+        if(kataExists){
+            return null;
+        }else{
+            return kataRepository.save(kata);
+        }
     }
 }
