@@ -1,9 +1,14 @@
 package cleancode.eLearningPlatform.modulesAndLessons.service;
 
+import cleancode.eLearningPlatform.auth.model.User;
+import cleancode.eLearningPlatform.auth.repository.UserRepository;
+import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +18,9 @@ import java.util.Optional;
 @Service
 public class ModuleService {
     private final ModuleRepository moduleRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final WeekService weekService;
 
     public List<Module> findAllModules() {
         return moduleRepository.findAllByOrderByNumber();
@@ -27,8 +35,16 @@ public class ModuleService {
         return moduleRepository.save(module);
     }
 
+    @Transactional
+    @Modifying
     public void deleteModule(int moduleId) {
-        moduleRepository.deleteById(moduleId);
+        List<User> users = userRepository.findAll();
+        Module module = moduleRepository.findById(moduleId).orElse(null);
+
+        userService.removeModuleFromAllUsers(module,true, users);
+
+        moduleRepository.delete(moduleRepository.findById(moduleId).orElse(null));
+        System.out.println("DELETE MODULE -> " + moduleId + "__________________________________");
     }
 
     public Module updateModule(int moduleId, Module updatedModule) {

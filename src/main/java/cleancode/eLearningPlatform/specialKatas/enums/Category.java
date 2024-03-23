@@ -1,9 +1,17 @@
 package cleancode.eLearningPlatform.specialKatas.enums;
 
 public enum Category {
-    MATH,
-    LOGICAL,
-    STRING,
-    SORTING,
+    ARRAYS,
+    ALGORITHMS,
+    DATE_TIME,
     FUNDAMENTALS,
+    GEOMETRY,
+    LOGICAL,
+    MATH,
+    PUZZLES,
+    RECURSION,
+    REGULAR_EXPRESSIONS,
+    STRING,
+    SORTING
+
 }

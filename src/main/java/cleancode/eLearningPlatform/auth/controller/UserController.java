@@ -1,16 +1,12 @@
 package cleancode.eLearningPlatform.auth.controller;
 
 
-import cleancode.eLearningPlatform.auth.model.AuthenticationRequest;
-import cleancode.eLearningPlatform.auth.model.AuthenticationResponse;
-import cleancode.eLearningPlatform.auth.model.RegisterRequest;
-import cleancode.eLearningPlatform.auth.model.User;
+import cleancode.eLearningPlatform.auth.model.*;
 import cleancode.eLearningPlatform.auth.service.UserService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin("*")
 @RestController
@@ -18,6 +14,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/getUserWithToken")
+    public ResponseEntity<User> getUserWithToken(@RequestHeader("Authorization") String authHeader){
+        return ResponseEntity.ok(userService.getUserWithToken(authHeader));
+    }
+
+    @GetMapping("/{userId}/completedStuff")
+    public ResponseEntity<CompletedItemsResponse> getCompletedStuffByUserId(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.getCompletedItems(userId));
+    }
 
     @PostMapping("/auth/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
@@ -29,14 +35,14 @@ public class UserController {
         return ResponseEntity.ok(userService.authenticate(authenticationRequest));
     }
 
-    @GetMapping("/getUserWithToken")
-    public ResponseEntity<User> getUserWithToken(@RequestHeader("Authorization") String authHeader){
-        return ResponseEntity.ok(userService.getUserWithToken(authHeader));
+    @PatchMapping()
+    public ResponseEntity<Response> addOrRemoveLessonFromUser(@RequestParam (name = "userId") Long userId, @RequestParam (name = "lessonId") Integer lessonId , @RequestParam (name = "weekId") Integer weekId ,  @RequestBody Status status){
+        return ResponseEntity.ok(userService.addOrRemoveLessonFromUser(userId, lessonId,weekId, status));
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getUsers(){
-        return ResponseEntity.ok(userService.getAllUsers());
+    @PatchMapping("/addCompleteKata")
+    public ResponseEntity<Response> addOrRemoveKataFromUser(@RequestParam (name = "userId") Long userId, @RequestParam (name = "kataId") Integer kataId ){
+        return ResponseEntity.ok(userService.addOrRemoveKataFromUser(userId,kataId,Status.DONE));
     }
 
 }

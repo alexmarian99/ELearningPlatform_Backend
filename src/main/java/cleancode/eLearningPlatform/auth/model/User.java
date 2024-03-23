@@ -38,6 +38,25 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ElementCollection( fetch = FetchType.EAGER)
+    @CollectionTable(name = "completed_lesson", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Integer> completedLessons = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "completed_week", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Integer> completedWeeks = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "completed_module", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Integer> completedModules = new ArrayList<>();
+
+    @ElementCollection( fetch = FetchType.EAGER)
+    @CollectionTable(name = "completed_kata", joinColumns = @JoinColumn(name = "user_id"))
+    private List<Integer> completedKatas = new ArrayList<>();
+
+    private String codeWarsUsername;
+    private Integer rankPoints;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

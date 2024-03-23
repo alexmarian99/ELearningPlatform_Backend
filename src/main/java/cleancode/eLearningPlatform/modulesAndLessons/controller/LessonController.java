@@ -34,8 +34,8 @@ public class LessonController {
     }
 
     @DeleteMapping()
-    public String deleteLesson (@RequestParam (name = "lessonId") int lessonId){
-        return lessonService.deleteLesson(lessonId);
+    public String deleteLesson (@RequestParam (name = "lessonId") Integer lessonId, @RequestParam (name = "weekId") Integer weekId){
+        return lessonService.deleteLesson(lessonId, weekId);
     }
 
     @PutMapping("/{lessonId}")
