@@ -1,6 +1,7 @@
 package cleancode.eLearningPlatform.specialKatas.enums;
 
 public enum Category {
+    ALL,
     ARRAYS,
     ALGORITHMS,
     DATE_TIME,
