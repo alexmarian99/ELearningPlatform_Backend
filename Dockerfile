@@ -7,6 +7,6 @@ RUN mvn clean install
 
 FROM openjdk:17
 WORKDIR /app
-COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar /demo-aws.jar
+COPY --from=build /app/target/ELearningPlatform-0.0.1-SNAPSHOT.jar /e_learning.jar
 EXPOSE 8080
-CMD ["java", "-jar", "/demo-aws.jar"]
+CMD ["java", "-jar", "/e_learning.jar"]
