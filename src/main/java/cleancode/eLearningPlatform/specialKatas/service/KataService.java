@@ -4,6 +4,7 @@ import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.auth.service.UserService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
@@ -17,9 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -103,48 +102,45 @@ public class KataService {
     }
 
     public KataPaginationResponse getFilteredKatas(Category category, String status, Integer difficulty, Long userId, Pageable pageable) {
-        List<Kata> initialFilter;
-        List<Kata> finalFilter = new ArrayList<>();
-        long totalNumberOfKatas;
+        List<Kata> initialFilter = new ArrayList<>();
+        long totalNumberOfKatas = 0;
 
-        if (!category.equals(Category.ALL) && difficulty != 0) {
-            initialFilter = kataRepository.findByCategoryAndLevel(category, difficulty, pageable);
-            totalNumberOfKatas = kataRepository.countByCategoryAndLevel(category, difficulty);
-        } else if (!category.equals(Category.ALL)) {
-            initialFilter = kataRepository.findByCategory(category, pageable);
-            totalNumberOfKatas = kataRepository.countByCategory(category);
-        } else if (difficulty != 0) {
-            initialFilter = kataRepository.findByLevel(difficulty, pageable);
-            totalNumberOfKatas = kataRepository.countByLevel(difficulty);
-        } else {
-            initialFilter = kataRepository.getSomeKata(pageable);
-            System.out.println(initialFilter.size());
-            totalNumberOfKatas = kataRepository.count();// Fetch all katas if no filters are provided
-        }
+//        if (!category.equals(Category.ALL) && difficulty != 0 && !status.equals("ALL")) {
+//            initialFilter = kataRepository.findByCategoryAndLevelAndCompletedByUsers(category, difficulty, userId, pageable);
+//            totalNumberOfKatas = kataRepository.countByCategoryAndLevelAndCompletedByUsers(category, difficulty, userId);
+//        }else if(!category.equals(Category.ALL) && difficulty != 0){
+//            initialFilter = kataRepository.findByCategoryAndLevel(category, difficulty, pageable);
+//            totalNumberOfKatas = kataRepository.countByCategoryAndLevel(category, difficulty);
+//        }else if(!category.equals(Category.ALL)  && !status.equals("ALL")){
+//            initialFilter = kataRepository.findByCategoryAndCompletedByUsers(category, userId, pageable);
+//            totalNumberOfKatas = kataRepository.countByCategoryAndCompletedByUsers(category, difficulty);
+//        }
 
-        if (!status.equals("ALL")) {
-            List<Integer> userCompletedKatasId = userRepository.findById(userId)
-                    .map(User::getCompletedKatas)
-                    .orElse(Collections.emptyList());
-            System.out.println("userCompletedKatasIdLength " + userCompletedKatasId.size());
-
-            if (status.equals("TO_DO")) {
-                finalFilter = initialFilter.stream().filter(kata -> !userCompletedKatasId.contains(kata.getId())).collect(Collectors.toList());
-                System.out.println("In to do " +  finalFilter.size());
-            } else if (status.equals("COMPLETED")) {
-                finalFilter = initialFilter.stream().filter(kata -> userCompletedKatasId.contains(kata.getId())).collect(Collectors.toList());
-                System.out.println("In completed" +  finalFilter.size());
-            } else {
-                finalFilter = initialFilter;
-            }
-        }
 
         return KataPaginationResponse
                 .builder()
-                .katas(finalFilter)
+                .katas(initialFilter)
                 .numberOfKatas(totalNumberOfKatas)
                 .build();
     }
 
+    public Response addOrRemoveUserFromKata(Long userId, int kataId, Status status) {
+        User user = userRepository.findById(userId).orElse(null);
+        Kata kata = kataRepository.findById(kataId).orElse(null);
+
+        assert user != null;
+        assert kata != null;
+
+        if (!kata.getCompletedByUsers().contains(userId)) {
+            if (user.getRankPoints() == null) {
+                user.setRankPoints(0);
+            }
+            kata.getCompletedByUsers().add(userId);
+            user.setRankPoints(user.getRankPoints() + (54 - (kata.getLevel() * 6)));
+        }
+        kataRepository.save(kata);
+        userRepository.save(user);
+        return Response.builder().response("User has been updated").build();
+    }
 
 }

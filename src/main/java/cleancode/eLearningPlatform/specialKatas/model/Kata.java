@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,9 +29,12 @@ public class Kata {
     @Max(8)
     private int level;
 
-
     @ElementCollection(targetClass = Category.class,fetch = FetchType.EAGER)
     @CollectionTable(name = "kata_categories", joinColumns = @JoinColumn(name = "kata_id"))
     @Enumerated(EnumType.STRING)
     private List<Category> category;
+
+    @ElementCollection( fetch = FetchType.EAGER)
+    @CollectionTable(name = "completed_kata2", joinColumns = @JoinColumn(name = "kata_id"))
+    private List<Long> completedByUsers = new ArrayList<>();
 }

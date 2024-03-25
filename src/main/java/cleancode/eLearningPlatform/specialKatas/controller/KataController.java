@@ -1,21 +1,18 @@
     package cleancode.eLearningPlatform.specialKatas.controller;
 
     import cleancode.eLearningPlatform.auth.model.Response;
+    import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
     import cleancode.eLearningPlatform.specialKatas.enums.Category;
     import cleancode.eLearningPlatform.specialKatas.model.Kata;
     import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
     import cleancode.eLearningPlatform.specialKatas.model.PaginationRequest;
     import cleancode.eLearningPlatform.specialKatas.service.KataService;
     import lombok.RequiredArgsConstructor;
-    import org.hibernate.sql.results.graph.entity.internal.AbstractNonJoinedEntityFetch;
     import org.springframework.data.domain.PageRequest;
     import org.springframework.data.domain.Pageable;
     import org.springframework.http.HttpStatus;
-    import org.springframework.http.HttpStatusCode;
     import org.springframework.http.ResponseEntity;
-    import org.springframework.stereotype.Repository;
     import org.springframework.web.bind.annotation.*;
-
     import java.util.List;
 
     @RestController
@@ -72,19 +69,24 @@
             }
         }
 
+        @PatchMapping("/addUserToKata")
+        public ResponseEntity<Response> addOrRemoveUserFromKata(@RequestParam (name = "userId") Long userId, @RequestParam (name = "kataId") Integer kataId ){
+            return ResponseEntity.ok(kataService.addOrRemoveUserFromKata(userId,kataId, Status.DONE));
+        }
+
         @DeleteMapping("/{kataId}")
         public ResponseEntity<Response> deleteKata(@PathVariable int kataId) {
-
             return  ResponseEntity.ok(kataService.deleteKata(kataId));
         }
+
         @GetMapping("/filtered")
         public ResponseEntity<KataPaginationResponse> getFilteredKatas(
                 @RequestParam(name= "category") Category category,
                 @RequestParam(name = "status") String status,
                 @RequestParam(name = "difficulty") String difficulty,
-                @RequestParam (name = "userId") Long userId,
-                @RequestParam (name = "pageNumber") Integer pageNumber,
-                @RequestParam (name = "numberOfItems") Integer numberOfItems){
+                @RequestParam(name = "userId") Long userId,
+                @RequestParam(name = "pageNumber") Integer pageNumber,
+                @RequestParam(name = "numberOfItems") Integer numberOfItems){
 
             Integer convertedDifficulty = difficulty.equals("ALL") ? 0 : Integer.parseInt(difficulty);
             Pageable pageable = PageRequest.of(pageNumber, numberOfItems);
@@ -93,7 +95,6 @@
             System.out.println(status);
             System.out.println(convertedDifficulty);
             System.out.println(userId);
-
             System.out.println("page nr " + pageNumber);
             System.out.println("nr items " + numberOfItems);
 
