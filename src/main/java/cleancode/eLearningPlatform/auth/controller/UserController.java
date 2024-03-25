@@ -45,4 +45,12 @@ public class UserController {
         return ResponseEntity.ok(userService.addOrRemoveKataFromUser(userId,kataId,Status.DONE));
     }
 
+    @PostMapping("/addimage")
+    public ResponseEntity<String> addNewImage(@RequestParam(name="userId") Long userId,
+                                              @RequestParam(name="profileImageUrl") String profileImageUrl) {
+        System.out.println(userId);
+        System.out.println(profileImageUrl);
+        String result = userService.addImageToUser(userId, profileImageUrl);
+            return ResponseEntity.ok(result);
+    }
 }

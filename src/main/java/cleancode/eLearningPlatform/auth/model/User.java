@@ -56,6 +56,7 @@ public class User implements UserDetails {
 
     private String codeWarsUsername;
     private Integer rankPoints;
+    private String profileImageUrl;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
