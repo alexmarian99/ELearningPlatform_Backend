@@ -101,21 +101,9 @@ public class KataService {
         }
     }
 
-    public KataPaginationResponse getFilteredKatas(Category category, String status, Integer difficulty, Long userId, Pageable pageable) {
-        List<Kata> initialFilter = new ArrayList<>();
-        long totalNumberOfKatas = 0;
-
-//        if (!category.equals(Category.ALL) && difficulty != 0 && !status.equals("ALL")) {
-//            initialFilter = kataRepository.findByCategoryAndLevelAndCompletedByUsers(category, difficulty, userId, pageable);
-//            totalNumberOfKatas = kataRepository.countByCategoryAndLevelAndCompletedByUsers(category, difficulty, userId);
-//        }else if(!category.equals(Category.ALL) && difficulty != 0){
-//            initialFilter = kataRepository.findByCategoryAndLevel(category, difficulty, pageable);
-//            totalNumberOfKatas = kataRepository.countByCategoryAndLevel(category, difficulty);
-//        }else if(!category.equals(Category.ALL)  && !status.equals("ALL")){
-//            initialFilter = kataRepository.findByCategoryAndCompletedByUsers(category, userId, pageable);
-//            totalNumberOfKatas = kataRepository.countByCategoryAndCompletedByUsers(category, difficulty);
-//        }
-
+    public KataPaginationResponse getFilteredKatas(Category category, String status, Integer level, Long userId, Pageable pageable) {
+        List<Kata> initialFilter = kataRepository.findByFilters(level, category, userId, status, pageable);
+        long totalNumberOfKatas = kataRepository.countFindByFilters(level, category, userId, status );
 
         return KataPaginationResponse
                 .builder()

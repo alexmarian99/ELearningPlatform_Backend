@@ -83,23 +83,18 @@
         public ResponseEntity<KataPaginationResponse> getFilteredKatas(
                 @RequestParam(name= "category") Category category,
                 @RequestParam(name = "status") String status,
-                @RequestParam(name = "difficulty") String difficulty,
+                @RequestParam(name = "level") String level,
                 @RequestParam(name = "userId") Long userId,
                 @RequestParam(name = "pageNumber") Integer pageNumber,
                 @RequestParam(name = "numberOfItems") Integer numberOfItems){
 
-            Integer convertedDifficulty = difficulty.equals("ALL") ? 0 : Integer.parseInt(difficulty);
+            Integer convertedlevel = level.equals("ALL") ? null : Integer.parseInt(level);
+            category = category.equals(Category.ALL) ? null : category;
+            status = status.equals("ALL") ? null : status;
             Pageable pageable = PageRequest.of(pageNumber, numberOfItems);
 
-            System.out.println(category);
-            System.out.println(status);
-            System.out.println(convertedDifficulty);
-            System.out.println(userId);
-            System.out.println("page nr " + pageNumber);
-            System.out.println("nr items " + numberOfItems);
-
             // Call the service method to retrieve filtered katas based on the provided criteria
-            KataPaginationResponse filteredKatas = kataService.getFilteredKatas(category, status, convertedDifficulty, userId, pageable);
+            KataPaginationResponse filteredKatas = kataService.getFilteredKatas(category, status, convertedlevel, userId, pageable);
 
             // Check if any katas were found based on the filter criteria
             if (filteredKatas.getNumberOfKatas() == 0) {
