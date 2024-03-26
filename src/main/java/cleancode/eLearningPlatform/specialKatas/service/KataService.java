@@ -85,9 +85,9 @@ public class KataService {
         }
     }
 
-    public KataPaginationResponse getFilteredKatas(Category category, String status, Integer level, Long userId, Pageable pageable) {
-        List<Kata> initialFilter = kataRepository.findByFilters(level, category, userId, status, pageable);
-        long totalNumberOfKatas = kataRepository.countFindByFilters(level, category, userId, status );
+    public KataPaginationResponse getFilteredKatas(Category category, String status, Integer level, Long userId, String searchByName, Pageable pageable) {
+        List<Kata> initialFilter = kataRepository.findByFilters(level, category, userId, status, searchByName,  pageable);
+        long totalNumberOfKatas = kataRepository.countFindByFilters(level, category, userId, status, searchByName );
 
         return KataPaginationResponse
                 .builder()
