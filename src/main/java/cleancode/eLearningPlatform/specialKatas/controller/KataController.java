@@ -40,11 +40,6 @@
             }
         }
 
-        @PostMapping("/getKatas")
-        public KataPaginationResponse getAllKatas(@RequestBody PaginationRequest paginationResponse) {
-            return kataService.findAllKatas(paginationResponse);
-        }
-
         @PostMapping
         public ResponseEntity<Object> saveOneKata(@RequestBody Kata kata) {
             // Check if a kata with the same title and link already exists
@@ -71,7 +66,7 @@
 
         @PatchMapping("/addUserToKata")
         public ResponseEntity<Response> addOrRemoveUserFromKata(@RequestParam (name = "userId") Long userId, @RequestParam (name = "kataId") Integer kataId ){
-            return ResponseEntity.ok(kataService.addOrRemoveUserFromKata(userId,kataId, Status.DONE));
+            return ResponseEntity.ok(kataService.addOrRemoveUserFromKata(userId,kataId));
         }
 
         @DeleteMapping("/{kataId}")

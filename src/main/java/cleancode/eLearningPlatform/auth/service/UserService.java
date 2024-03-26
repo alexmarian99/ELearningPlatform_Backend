@@ -212,10 +212,6 @@ public class UserService {
         List<Integer> completedWeeks = user.getCompletedWeeks();
         long completedWeeksAfter = weeksOfModule.stream().filter(week -> completedWeeks.contains(week.getId())).count();
 
-//        System.out.println("WEEKS OF MODULES SIZE -> " + weeksOfModule.size());
-//        System.out.println("COMPLETED WEEKS -> " + completedWeeksAfter ) ;
-//        System.out.println("ARE EQAL -> " + (weeksOfModule.size() == completedWeeksAfter));
-
         if(addOrRemoveWeek.equals(Status.TODO) && weeksOfModule.size() - completedWeeksAfter == 1){
             System.out.println("ADD MODULE FROM REMOVE WEEK");
             user.getCompletedModules().add(weekRepository.getModuleIdFromWeek(weekId));
@@ -231,32 +227,6 @@ public class UserService {
         User user = userRepository.findById(userId).orElse(null);
 
         assert user != null;
-        return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).completedKatas(user.getCompletedKatas()).build();
-    }
-
-    public Response addOrRemoveKataFromUser(Long userId,int kataId,Status status) {
-        User user = userRepository.findById(userId).orElse(null);
-        Kata kata = kataRepository.findById(kataId).orElse(null);
-
-        assert user != null;
-        assert kata != null;
-        if(!user.getCompletedKatas().contains(kataId)){
-            if (user.getRankPoints() == null){
-                user.setRankPoints(0);
-            }
-            user.getCompletedKatas().add(kataId);
-            user.setRankPoints(user.getRankPoints() + (54 - (kata.getLevel()*6)));
-        }
-        userRepository.save(user);
-        return Response.builder().response("User has been updated").build();
-    }
-
-
-    public void removeKataFromAllUsers(int kataId){
-        List<User> users = userRepository.findAll();
-        for (User user : users){
-            user.getCompletedKatas().remove(Integer.valueOf(kataId));
-        }
-
+        return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).build();
     }
 }

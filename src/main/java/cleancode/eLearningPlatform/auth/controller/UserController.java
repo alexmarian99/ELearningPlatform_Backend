@@ -1,6 +1,5 @@
 package cleancode.eLearningPlatform.auth.controller;
 
-
 import cleancode.eLearningPlatform.auth.model.*;
 import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
@@ -8,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("*")
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -39,10 +37,4 @@ public class UserController {
     public ResponseEntity<Response> addOrRemoveLessonFromUser(@RequestParam (name = "userId") Long userId, @RequestParam (name = "lessonId") Integer lessonId , @RequestParam (name = "weekId") Integer weekId ,  @RequestBody Status status){
         return ResponseEntity.ok(userService.addOrRemoveLessonFromUser(userId, lessonId,weekId, status));
     }
-
-    @PatchMapping("/addCompleteKata")
-    public ResponseEntity<Response> addOrRemoveKataFromUser(@RequestParam (name = "userId") Long userId, @RequestParam (name = "kataId") Integer kataId ){
-        return ResponseEntity.ok(userService.addOrRemoveKataFromUser(userId,kataId,Status.DONE));
-    }
-
 }

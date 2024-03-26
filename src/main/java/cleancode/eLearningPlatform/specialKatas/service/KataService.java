@@ -4,16 +4,13 @@ import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.auth.service.UserService;
-import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
 import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
-import cleancode.eLearningPlatform.specialKatas.model.PaginationRequest;
 import cleancode.eLearningPlatform.specialKatas.repository.KataRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,10 +21,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class KataService {
     private final KataRepository kataRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
     Random random = new Random();
-
     private List<Kata> kataOfTheDay = new ArrayList<>();
 
     @Cacheable(value = "kataCache", key = "#root.methodName")
@@ -48,16 +43,6 @@ public class KataService {
         kataOfTheDay = getOneRandomItemFromLists(List.of(firstGradeKatas, secondGradeKatas, thirdGradeKatas, fourthGradeKatas));
     }
 
-    public KataPaginationResponse findAllKatas(PaginationRequest paginationRequest) {
-        Pageable pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getNumberOfItems());
-
-        return KataPaginationResponse
-                .builder()
-                .katas(kataRepository.getSomeKata(pageable))
-                .numberOfKatas(kataRepository.count())
-                .build();
-    }
-
     public Kata saveKata(Kata kata) {
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(kata.getTitle(), kata.getKataLink());
         // Kata does not exist, save it
@@ -73,7 +58,6 @@ public class KataService {
     @Transactional
     public Response deleteKata(int id) {
         kataRepository.deleteById(id);
-        userService.removeKataFromAllUsers(id);
         return Response.builder().response("Kata deleted").build();
     }
 
@@ -92,9 +76,9 @@ public class KataService {
     }
 
     public Kata editKata(Kata kata) {
-        boolean kataExists = kataRepository.existsByTitle(kata.getTitle());
+        Kata kataFromDB = kataRepository.findByTitle(kata.getTitle());
 
-        if (kataExists) {
+        if (kataFromDB.getId() != kata.getId() ) {
             return null;
         } else {
             return kataRepository.save(kata);
@@ -112,7 +96,7 @@ public class KataService {
                 .build();
     }
 
-    public Response addOrRemoveUserFromKata(Long userId, int kataId, Status status) {
+    public Response addOrRemoveUserFromKata(Long userId, int kataId) {
         User user = userRepository.findById(userId).orElse(null);
         Kata kata = kataRepository.findById(kataId).orElse(null);
 
