@@ -25,10 +25,10 @@ public interface KataRepository extends JpaRepository<Kata, Integer> {
     @Query("SELECT k FROM Kata k " +
             "WHERE (:level IS NULL OR k.level = :level) " +
             "AND (:category IS NULL OR :category MEMBER OF k.category) " +
-            "AND (:searchByName IS NULL OR lower(k.title) LIKE lower(concat('%', :searchByName, '%'))) " +
+            "AND (lower(k.title) LIKE lower(concat('%', :searchByName, '%'))) " +
             "AND (:status IS NULL OR (:status = 'COMPLETED' AND :userId MEMBER OF k.completedByUsers) OR (:status = 'TO_DO' AND :userId NOT MEMBER OF k.completedByUsers))")
     List<Kata> findByFilters(@Param("level") Integer level,
-                             @Param("category") Category category,
+                             @Param("category") String category,
                              @Param("userId") Long userId,
                              @Param("status") String status,
                              @Param("searchByName") String searchByName,
@@ -37,10 +37,10 @@ public interface KataRepository extends JpaRepository<Kata, Integer> {
     @Query("SELECT COUNT(k) FROM Kata k " +
             "WHERE (:level IS NULL OR k.level = :level) " +
             "AND (:category IS NULL OR :category MEMBER OF k.category) " +
-            "AND (:searchByName IS NULL OR lower(k.title) LIKE lower(concat('%', :searchByName, '%'))) " +
+            "AND (lower(k.title) LIKE lower(concat('%', :searchByName, '%'))) " +
             "AND (:status IS NULL OR (:status = 'COMPLETED' AND :userId MEMBER OF k.completedByUsers) OR (:status = 'TO_DO' AND :userId NOT MEMBER OF k.completedByUsers))")
     Long countFindByFilters(@Param("level") Integer level,
-                            @Param("category") Category category,
+                            @Param("category") String category,
                             @Param("userId") Long userId,
                             @Param("status") String status,
                             @Param("searchByName") String searchByName);

@@ -3,8 +3,6 @@ package cleancode.eLearningPlatform.specialKatas.service;
 import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
-import cleancode.eLearningPlatform.auth.service.UserService;
-import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
 import cleancode.eLearningPlatform.specialKatas.repository.KataRepository;
@@ -48,6 +46,10 @@ public class KataService {
         // Kata does not exist, save it
         return existingKata.orElseGet(() -> kataRepository.save(kata));
     }
+    public void saveKata(List<Kata> katas) {
+        kataRepository.deleteAll();
+        kataRepository.saveAll(katas);
+    }
 
     public boolean kataExists(String title, String kataLink) {
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(title, kataLink);
@@ -85,7 +87,8 @@ public class KataService {
         }
     }
 
-    public KataPaginationResponse getFilteredKatas(Category category, String status, Integer level, Long userId, String searchByName, Pageable pageable) {
+    public KataPaginationResponse getFilteredKatas(String category, String status, Integer level, Long userId, String searchByName, Pageable pageable) {
+        System.out.println(searchByName);
         List<Kata> initialFilter = kataRepository.findByFilters(level, category, userId, status, searchByName,  pageable);
         long totalNumberOfKatas = kataRepository.countFindByFilters(level, category, userId, status, searchByName );
 

@@ -55,6 +55,14 @@ public class KataController {
         }
     }
 
+    @PostMapping("/savePopulateKatas")
+    public Response savePopulateKatas(@RequestBody List<Kata> katas) {
+        // Check if a kata with the same title and link already exists
+        System.out.println(katas.size());
+       kataService.saveKata(katas);
+       return Response.builder().response("ALL KATAS ADDED").build();
+    }
+
     @PutMapping("/{kataId}")
     public ResponseEntity<Object> editKata(@RequestBody Kata kata) {
         Kata dbKata = kataService.editKata(kata);
@@ -78,7 +86,7 @@ public class KataController {
     @GetMapping("/filtered")
     public ResponseEntity<KataPaginationResponse> getFilteredKatas(
             @RequestParam(name = "searchByName") String searchByName,
-            @RequestParam(name = "category") Category category,
+            @RequestParam(name = "category") String category,
             @RequestParam(name = "status") String status,
             @RequestParam(name = "level") String level,
             @RequestParam(name = "userId") Long userId,
@@ -87,8 +95,7 @@ public class KataController {
             ) {
 
         Integer convertedlevel = level.equals("ALL") ? null : Integer.parseInt(level);
-        String convertedSearchByName = searchByName.equals("") ? null : searchByName;
-        category = category.equals(Category.ALL) ? null : category;
+        category = category.equals("ALL") ? null : category;
         status = status.equals("ALL") ? null : status;
         Pageable pageable = PageRequest.of(pageNumber, numberOfItems);
 
