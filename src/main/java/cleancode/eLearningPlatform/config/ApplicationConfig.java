@@ -48,7 +48,10 @@ public class ApplicationConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://elearning-platform-9a6fa.web.app/", "https://elearning-platform-9a6fa.firebaseapp.com/","http://localhost:5173/")
+                        .allowedOrigins("https://elearning-platform-9a6fa.web.app/",
+                                        "https://elearning-platform-9a6fa.firebaseapp.com/",
+                                        "http://localhost:5173/",
+                                        "http://quest.cleancode.ro/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedHeaders("*");
             }
