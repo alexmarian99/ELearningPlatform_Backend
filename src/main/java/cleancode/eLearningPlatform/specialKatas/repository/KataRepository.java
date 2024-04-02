@@ -1,6 +1,5 @@
 package cleancode.eLearningPlatform.specialKatas.repository;
 
-import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 
 import org.springframework.data.domain.Pageable;

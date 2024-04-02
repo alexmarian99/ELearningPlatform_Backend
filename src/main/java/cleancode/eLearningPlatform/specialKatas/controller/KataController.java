@@ -1,11 +1,7 @@
 package cleancode.eLearningPlatform.specialKatas.controller;
-
 import cleancode.eLearningPlatform.auth.model.Response;
-import cleancode.eLearningPlatform.modulesAndLessons.model.Status;
-import cleancode.eLearningPlatform.specialKatas.enums.Category;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
-import cleancode.eLearningPlatform.specialKatas.model.PaginationRequest;
 import cleancode.eLearningPlatform.specialKatas.service.KataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
