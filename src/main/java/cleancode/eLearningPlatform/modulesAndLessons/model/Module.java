@@ -27,11 +27,11 @@ public class Module {
     @Column(columnDefinition = "TEXT")
     private String imgLink;
 
-    @JsonBackReference
+    @JsonBackReference("weeks")
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
 
-    @JsonBackReference
+    @JsonBackReference("course")
     @ManyToOne(fetch = FetchType.LAZY)
     private Course course;
 
