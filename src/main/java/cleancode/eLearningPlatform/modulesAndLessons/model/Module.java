@@ -1,6 +1,7 @@
 package cleancode.eLearningPlatform.modulesAndLessons.model;
 
 
+import cleancode.eLearningPlatform.courses.model.Course;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -29,6 +30,10 @@ public class Module {
     @JsonBackReference
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
+
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Course course;
 
 
     @Override

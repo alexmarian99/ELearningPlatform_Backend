@@ -30,13 +30,21 @@ public class User implements UserDetails {
     private String lastName;
 
     @Column(unique = true)
-    private String username;
+    private String email;
 
     @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    private short phoneNumber;
+
+    private String location;
+    private String address;
+
+    private String githubUsername;
+    private String codeWarsUsername;
+    private Integer rankPoints;
 
     @ElementCollection( fetch = FetchType.EAGER)
     @CollectionTable(name = "completed_lesson", joinColumns = @JoinColumn(name = "user_id"))
@@ -50,12 +58,14 @@ public class User implements UserDetails {
     @CollectionTable(name = "completed_module", joinColumns = @JoinColumn(name = "user_id"))
     private List<Integer> completedModules = new ArrayList<>();
 
-    private String codeWarsUsername;
-    private Integer rankPoints;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override

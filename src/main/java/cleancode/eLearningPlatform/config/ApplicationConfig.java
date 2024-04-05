@@ -21,7 +21,7 @@ public class ApplicationConfig {
     private final UserRepository userRepository;
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> userRepository.findByUsername(username).orElseThrow(() ->new UsernameNotFoundException("User not found"));
+        return email -> userRepository.findByEmail(email).orElseThrow(() ->new UsernameNotFoundException("User not found"));
     }
 
     @Bean
@@ -48,7 +48,9 @@ public class ApplicationConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://elearning-platform-9a6fa.web.app/", "https://elearning-platform-9a6fa.firebaseapp.com/","http://localhost:5173/")
+                        .allowedOrigins("https://elearning-platform-9a6fa.web.app/",
+                                        "https://elearning-platform-9a6fa.firebaseapp.com/",
+                                        "http://localhost:5173/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedHeaders("*");
             }

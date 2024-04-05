@@ -34,6 +34,6 @@ public class Kata {
     private List<String> category;
 
     @ElementCollection( fetch = FetchType.EAGER)
-    @CollectionTable(name = "completed_kata2", joinColumns = @JoinColumn(name = "kata_id"))
+    @CollectionTable(name = "completed_kata", joinColumns = @JoinColumn(name = "kata_id"))
     private List<Long> completedByUsers = new ArrayList<>();
 }
