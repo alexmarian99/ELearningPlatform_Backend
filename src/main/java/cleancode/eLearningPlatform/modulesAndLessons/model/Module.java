@@ -24,10 +24,7 @@ public class Module {
     private String name;
     private int number;
 
-    @Column(columnDefinition = "TEXT")
-    private String imgLink;
-
-    @JsonBackReference("weeks")
+//    @JsonBackReference("weeks")
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
 
@@ -42,7 +39,6 @@ public class Module {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", number=" + number +
-                ", imgLink='" + imgLink + '\'' +
                 ", weeks=" + weeks +
                 '}';
     }

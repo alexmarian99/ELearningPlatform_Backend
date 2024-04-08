@@ -11,7 +11,6 @@ import java.util.List;
 public interface  ModuleRepository extends JpaRepository<Module,Integer> {
     List<Module> findAllByOrderByNumber();
 
-
     @Query("SELECT m.weeks FROM Module m WHERE m.id = :moduleId")
     List<Week> getWeeksOfModuleById(int moduleId);
 }

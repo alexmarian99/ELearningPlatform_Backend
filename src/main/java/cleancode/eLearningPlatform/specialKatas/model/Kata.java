@@ -30,7 +30,6 @@ public class Kata {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "kata_categories", joinColumns = @JoinColumn(name = "kata_id"))
-    @Enumerated(EnumType.STRING)
     private List<String> category;
 
     @ElementCollection( fetch = FetchType.EAGER)
