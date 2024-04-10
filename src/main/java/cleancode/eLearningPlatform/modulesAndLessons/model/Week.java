@@ -24,7 +24,6 @@ public class Week {
     private int id;
 
     private int number;
-    private String name;
 
     @JsonBackReference(value = "module")
     @ManyToOne(fetch=FetchType.LAZY)
@@ -43,7 +42,6 @@ public class Week {
         return "Week{" +
                 "id=" + id +
                 ", number=" + number +
-                ", name='" + name + '\'' +
                 '}';
     }
 }

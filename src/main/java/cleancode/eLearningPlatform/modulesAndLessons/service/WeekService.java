@@ -68,7 +68,6 @@ public class WeekService {
         if(existingWeekOptional.isPresent()){
             Week existingWeek = existingWeekOptional.get();
 
-            existingWeek.setName(updatedWeek.getName());
             existingWeek.setNumber(updatedWeek.getNumber());
             existingWeek.setCategories(updatedWeek.getCategories());
 
