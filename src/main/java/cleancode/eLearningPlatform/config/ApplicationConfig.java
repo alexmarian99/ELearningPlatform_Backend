@@ -50,7 +50,9 @@ public class ApplicationConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("https://elearning-platform-9a6fa.web.app/",
                                         "https://elearning-platform-9a6fa.firebaseapp.com/",
-                                        "http://localhost:5173/")
+                                        "http://localhost:5173/",
+                                        "https://quest.cleancode.ro/",
+                                        "http://quest.cleancode.ro/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedHeaders("*");
             }

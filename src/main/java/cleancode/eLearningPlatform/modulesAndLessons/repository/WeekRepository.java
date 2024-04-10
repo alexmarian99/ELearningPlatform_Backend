@@ -16,8 +16,8 @@ public interface WeekRepository extends JpaRepository<Week, Integer> {
     @Query("SELECT w.lessons FROM Week w WHERE w.id = :weekId")
     List<Lesson> getLessonsByWeekId(int weekId);
 
-    @Query("SELECT w.lessons FROM Week w WHERE w.id = :weekId")
-    List<Lesson> getLessonsByWeekId(Integer weekId);
+//    @Query("SELECT w.lessons FROM Week w WHERE w.id = :weekId")
+//    List<Lesson> getLessonsByWeekId(int weekId);
 
     @Query("SELECT w.module.weeks FROM Week w WHERE w.id = :weekId")
     List<Week> getRestOfWeeks(Integer weekId);
