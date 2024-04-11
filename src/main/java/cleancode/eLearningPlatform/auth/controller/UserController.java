@@ -44,4 +44,13 @@ public class UserController {
     public ResponseEntity<List<User>> getUsers(){
         return ResponseEntity.ok(userService.findAllByOrderByRankPoints());
     }
+
+    @PostMapping("/addimage")
+    public ResponseEntity<String> addNewImage(@RequestParam(name="userId") Long userId,
+                                              @RequestParam(name="profileImageUrl") String profileImageUrl) {
+        System.out.println(userId);
+        System.out.println(profileImageUrl);
+        String result = userService.addImageToUser(userId, profileImageUrl);
+            return ResponseEntity.ok(result);
+    }
 }
