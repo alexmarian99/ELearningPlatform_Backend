@@ -228,4 +228,7 @@ public class UserService {
         assert user != null;
         return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).build();
     }
+    public List<User>findAllByOrderByRankPoints(){
+    return userRepository.findAllByOrderByRankPoints();
+    }
 }
