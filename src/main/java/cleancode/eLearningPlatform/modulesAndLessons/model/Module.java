@@ -1,6 +1,7 @@
 package cleancode.eLearningPlatform.modulesAndLessons.model;
 
 
+import cleancode.eLearningPlatform.courses.model.Course;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -23,12 +24,13 @@ public class Module {
     private String name;
     private int number;
 
-    @Column(columnDefinition = "TEXT")
-    private String imgLink;
-
-    @JsonBackReference
+//    @JsonBackReference("weeks")
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Week> weeks = new ArrayList<>();
+
+    @JsonBackReference("course")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Course course;
 
 
     @Override
@@ -37,7 +39,6 @@ public class Module {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", number=" + number +
-                ", imgLink='" + imgLink + '\'' +
                 ", weeks=" + weeks +
                 '}';
     }

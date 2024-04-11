@@ -21,7 +21,7 @@ public class ApplicationConfig {
     private final UserRepository userRepository;
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> userRepository.findByUsername(username).orElseThrow(() ->new UsernameNotFoundException("User not found"));
+        return email -> userRepository.findByEmail(email).orElseThrow(() ->new UsernameNotFoundException("User not found"));
     }
 
     @Bean
@@ -51,6 +51,7 @@ public class ApplicationConfig {
                         .allowedOrigins("https://elearning-platform-9a6fa.web.app/",
                                         "https://elearning-platform-9a6fa.firebaseapp.com/",
                                         "http://localhost:5173/",
+                                        "https://quest.cleancode.ro/",
                                         "http://quest.cleancode.ro/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedHeaders("*");

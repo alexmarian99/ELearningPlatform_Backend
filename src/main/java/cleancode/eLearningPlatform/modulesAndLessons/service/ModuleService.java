@@ -4,6 +4,7 @@ import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,15 +21,23 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final WeekService weekService;
 
     public List<Module> findAllModules() {
-        return moduleRepository.findAllByOrderByNumber();
+        List<Module> modules = moduleRepository.findAllByOrderByNumber();
+
+        for(int i = 0; i < modules.size(); i++){
+            List<Week> weeks = moduleRepository.getWeeksOfModuleById(modules.get(i).getId());
+            modules.get(i).setWeeks(weeks);
+        }
+
+        return modules;
     }
 
     public Module findModuleById(int moduleId) {
-        return moduleRepository.findById(moduleId).orElse(null);
-
+        Module module = moduleRepository.findById(moduleId).orElse(null);
+        List<Week> weeks = moduleRepository.getWeeksOfModuleById(module.getId());
+        module.setWeeks(weeks);
+        return module;
     }
 
     public Module saveModules(Module module) {
@@ -55,7 +64,6 @@ public class ModuleService {
 
             existingModule.setName(updatedModule.getName());
             existingModule.setNumber(updatedModule.getNumber());
-            existingModule.setImgLink(updatedModule.getImgLink());
 
             return moduleRepository.save(existingModule);
         } else {

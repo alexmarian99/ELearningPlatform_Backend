@@ -3,6 +3,7 @@ package cleancode.eLearningPlatform.modulesAndLessons.service;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
 import cleancode.eLearningPlatform.auth.service.UserService;
+import cleancode.eLearningPlatform.modulesAndLessons.model.Lesson;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
@@ -30,13 +31,21 @@ public class WeekService {
     }
 
     public List<Week> findAllWeeksByModuleId(int moduleId){
-        return weekRepository.findAllByModuleIdOrderByNumber(moduleId);
+        List<Week> weeks = weekRepository.findAllByModuleIdOrderByNumber(moduleId);
+
+        for(int i = 0; i < weeks.size(); i++){
+            List<Lesson> lessons = weekRepository.getLessonsByWeekId(weeks.get(i).getId());
+            weeks.get(i).setLessons(lessons);
+        }
+
+        return weeks;
     }
 
     @Transactional
     @Modifying
     public Week saveWeek(Week week){
         Module module = moduleRepository.findById(week.getModule().getId()).orElse(null);
+        System.out.println("Week service, saved week " + week);
         userService.removeModuleFromAllUsers(module, false, new ArrayList<>());
 
         return weekRepository.save(week);
@@ -59,9 +68,8 @@ public class WeekService {
         if(existingWeekOptional.isPresent()){
             Week existingWeek = existingWeekOptional.get();
 
-            existingWeek.setName(updatedWeek.getName());
             existingWeek.setNumber(updatedWeek.getNumber());
-            existingWeek.setImgLink(updatedWeek.getImgLink());
+            existingWeek.setCategories(updatedWeek.getCategories());
 
             return weekRepository.save(existingWeek);
         }else{

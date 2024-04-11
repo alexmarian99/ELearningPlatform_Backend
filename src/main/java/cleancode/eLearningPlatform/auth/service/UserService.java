@@ -31,19 +31,18 @@ public class UserService {
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final KataRepository kataRepository;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
-        boolean usernameExists = userRepository.existsByUsername(registerRequest.getUsername());
+        boolean emailExists = userRepository.existsByEmail(registerRequest.getEmail());
 
-        if (usernameExists) {
+        if (emailExists) {
             return AuthenticationResponse.builder().response("0").build();
         }
 
         var user = User.builder()
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
-                .username(registerRequest.getUsername())
+                .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .codeWarsUsername(registerRequest.getCodeWarsUsername())
                 .role(Role.USER)
@@ -56,17 +55,17 @@ public class UserService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getUsername(),
+                authenticationRequest.getEmail(),
                 authenticationRequest.getPassword()
         ));
-        var user = userRepository.findByUsername(authenticationRequest.getUsername()).orElseThrow();
+        var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().response(jwtToken).build();
     }
 
     public User getUserWithToken(String authHeader) {
         String token = authHeader.substring(7);
-        return userRepository.findByUsername(jwtService.extractUsername(token)).orElse(null);
+        return userRepository.findByEmail(jwtService.extractUsername(token)).orElse(null);
     }
 
 
@@ -228,5 +227,8 @@ public class UserService {
 
         assert user != null;
         return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).build();
+    }
+    public List<User>findAllByOrderByRankPoints(){
+    return userRepository.findAllByOrderByRankPoints();
     }
 }
