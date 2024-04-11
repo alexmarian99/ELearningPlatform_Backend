@@ -231,4 +231,16 @@ public class UserService {
     public List<User>findAllByOrderByRankPoints(){
     return userRepository.findAllByOrderByRankPoints();
     }
+
+    public String addImageToUser(Long userId,String profileImageUrl){
+       User user =  userRepository.findById(userId).orElse(null);
+
+       if(user == null ){
+           return "User not Found";
+       }
+
+       user.setProfileImageUrl(profileImageUrl);
+       userRepository.save(user);
+       return "Profile image URL updated succesfully";
+    }
 }
