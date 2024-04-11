@@ -38,6 +38,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
     private short phoneNumber;
+    private String profileImageUrl;
 
     private String location;
     private String address;
@@ -61,10 +62,6 @@ public class User implements UserDetails {
     @ElementCollection( fetch = FetchType.EAGER)
     @CollectionTable(name = "completed_kata", joinColumns = @JoinColumn(name = "user_id"))
     private List<Integer> completedKatas = new ArrayList<>();
-
-    private String codeWarsUsername;
-    private Integer rankPoints;
-    private String profileImageUrl;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
