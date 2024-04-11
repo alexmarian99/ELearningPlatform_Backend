@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
@@ -28,6 +31,11 @@ public class UserController {
     @PostMapping("/auth/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest){
         return ResponseEntity.ok(userService.register(registerRequest));
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable long userId, @RequestBody Map<String, Object> updateFields){
+        return ResponseEntity.ok( userService.updateUser(userId, updateFields));
     }
 
     @PostMapping("/auth/authenticate")

@@ -16,8 +16,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -239,5 +243,21 @@ public class UserService {
        user.setProfileImageUrl(profileImageUrl);
        userRepository.save(user);
        return "Profile image URL updated succesfully";
+    }
+
+    public User updateUser(long userId, Map<String,Object> updateFields) {
+        Optional<User> existingUserOptional = userRepository.findById(userId);
+
+        if(existingUserOptional.isPresent()){
+           updateFields.forEach((key, value) -> {
+               Field field = ReflectionUtils.findField(User.class, key);
+               field.setAccessible(true);
+               ReflectionUtils.setField(field, existingUserOptional.get(), value);
+           });
+           return userRepository.save(existingUserOptional.get());
+        }else{
+            throw new IllegalArgumentException("User with id: " + userId + "can't be found");
+        }
+
     }
 }
