@@ -78,9 +78,9 @@ public class KataService {
     }
 
     public Kata editKata(Kata kata) {
-        Kata kataFromDB = kataRepository.findByTitle(kata.getTitle());
+        Optional<Kata> kataFromDB = kataRepository.findByTitle(kata.getTitle());
 
-        if (kataFromDB.getId() != kata.getId() ) {
+        if (kataFromDB.isPresent() && kataFromDB.get().getId() != kata.getId() ) {
             return null;
         } else {
             return kataRepository.save(kata);
