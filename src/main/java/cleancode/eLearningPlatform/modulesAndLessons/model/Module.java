@@ -39,7 +39,6 @@ public class Module {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", number=" + number +
-                ", weeks=" + weeks +
                 '}';
     }
 }

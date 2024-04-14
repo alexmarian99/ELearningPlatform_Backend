@@ -260,4 +260,8 @@ public class UserService {
         }
 
     }
+
+    public List<User> getUserBySearchEmail(String email) {
+        return userRepository.findUsersBySearchEmail(email);
+    }
 }

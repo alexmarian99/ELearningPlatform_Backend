@@ -1,9 +1,9 @@
 package cleancode.eLearningPlatform.modulesAndLessons.controller;
 
+import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.service.WeekService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,5 +37,10 @@ public class WeekController {
     @PutMapping("/{weekId}")
     public Week updateWeek(@PathVariable int weekId,@RequestBody Week updatedWeek){
         return weekService.updateWeek(weekId,updatedWeek);
+    }
+
+    @PatchMapping("/permissions")
+    public Week updatePermissionToWeek(@RequestParam (name = "weekId") int weekId, @RequestParam (name = "userId") int userId){
+        return weekService.updatePermissionToWeek(weekId, userId);
     }
 }

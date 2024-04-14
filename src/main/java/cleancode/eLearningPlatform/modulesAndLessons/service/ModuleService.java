@@ -6,28 +6,37 @@ import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Module;
 import cleancode.eLearningPlatform.modulesAndLessons.model.Week;
 import cleancode.eLearningPlatform.modulesAndLessons.repository.ModuleRepository;
+import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @RequiredArgsConstructor
 @Service
 public class ModuleService {
     private final ModuleRepository moduleRepository;
+    private final WeekRepository weekRepository;
     private final UserRepository userRepository;
     private final UserService userService;
 
     public List<Module> findAllModules() {
         List<Module> modules = moduleRepository.findAllByOrderByNumber();
 
-        for(int i = 0; i < modules.size(); i++){
-            List<Week> weeks = moduleRepository.getWeeksOfModuleById(modules.get(i).getId());
-            modules.get(i).setWeeks(weeks);
+
+        for (int i = 0; i < modules.size(); i++) {
+            List<Week> weeks = weekRepository.findAllByModuleIdOrderByNumber(modules.get(i).getId());
+
+            modules.get(i).setWeeks(weeks
+                                    .stream()
+                                    .map((week) -> Week.builder()
+                                                    .id(week.getId())
+                                                    .number(week.getNumber())
+                                                    .usersWithAccessWeek(week.getUsersWithAccessWeek())
+                                                    .build()).toList());
         }
 
         return modules;
@@ -50,7 +59,7 @@ public class ModuleService {
         List<User> users = userRepository.findAll();
         Module module = moduleRepository.findById(moduleId).orElse(null);
 
-        userService.removeModuleFromAllUsers(module,true, users);
+        userService.removeModuleFromAllUsers(module, true, users);
 
         moduleRepository.delete(moduleRepository.findById(moduleId).orElse(null));
         System.out.println("DELETE MODULE -> " + moduleId + "__________________________________");
