@@ -83,11 +83,9 @@ public class WeekService {
         if(week.isPresent()){
             if(week.get().getUsersWithAccessWeek().contains(userId)){
                 week.get().getUsersWithAccessWeek().remove(Integer.valueOf(userId));
-                weekRepository.save(week.get());
                 return weekRepository.save(week.get());
             }else{
                 week.get().getUsersWithAccessWeek().add(userId);
-                weekRepository.save(week.get());
                 return weekRepository.save(week.get());
             }
         }

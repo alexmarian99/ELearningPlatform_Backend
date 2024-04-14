@@ -230,7 +230,7 @@ public class UserService {
         return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).build();
     }
     public List<User>findAllByOrderByRankPoints(){
-    return userRepository.findAllByOrderByRankPoints();
+    return userRepository.findAllByOrderByRankPointsDesc();
     }
 
     public String addImageToUser(Long userId,String profileImageUrl){
