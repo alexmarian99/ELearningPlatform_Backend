@@ -230,7 +230,7 @@ public class UserService {
         return CompletedItemsResponse.builder().completedLessons(user.getCompletedLessons()).completedWeeks(user.getCompletedWeeks()).completedModules(user.getCompletedModules()).build();
     }
     public List<User>findAllByOrderByRankPoints(){
-    return userRepository.findAllByOrderByRankPoints();
+    return userRepository.findAllByOrderByRankPointsDesc();
     }
 
     public String addImageToUser(Long userId,String profileImageUrl){
@@ -259,5 +259,9 @@ public class UserService {
             throw new IllegalArgumentException("User with id: " + userId + "can't be found");
         }
 
+    }
+
+    public List<User> getUserBySearchEmail(String email) {
+        return userRepository.findUsersBySearchEmail(email);
     }
 }

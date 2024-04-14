@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +13,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Week {
-
-
     @Id
     @GeneratedValue
     private int id;
@@ -36,6 +34,10 @@ public class Week {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "week_categories", joinColumns = @JoinColumn(name = "week_id"))
     private List<String> categories = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "users_with_access_week", joinColumns = @JoinColumn(name = "week_id"))
+    private List<Integer> usersWithAccessWeek = new ArrayList<>();
 
     @Override
     public String toString() {

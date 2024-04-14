@@ -23,6 +23,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserWithToken(authHeader));
     }
 
+    @GetMapping("/{email}")
+    public ResponseEntity<List<User>> getUserBySearchEmail(@PathVariable String email){
+        return ResponseEntity.ok(userService.getUserBySearchEmail(email));
+    }
+
     @GetMapping("/{userId}/completedStuff")
     public ResponseEntity<CompletedItemsResponse> getCompletedStuffByUserId(@PathVariable Long userId){
         return ResponseEntity.ok(userService.getCompletedItems(userId));

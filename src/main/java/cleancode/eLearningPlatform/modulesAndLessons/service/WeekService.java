@@ -76,4 +76,19 @@ public class WeekService {
             throw new IllegalArgumentException("Week with id: " + weekId + "can't be found");
         }
     }
+
+    public Week updatePermissionToWeek(int weekId, int userId) {
+        Optional<Week> week = weekRepository.findById(weekId);
+
+        if(week.isPresent()){
+            if(week.get().getUsersWithAccessWeek().contains(userId)){
+                week.get().getUsersWithAccessWeek().remove(Integer.valueOf(userId));
+                return weekRepository.save(week.get());
+            }else{
+                week.get().getUsersWithAccessWeek().add(userId);
+                return weekRepository.save(week.get());
+            }
+        }
+        return null;
+    }
 }

@@ -45,7 +45,7 @@ public class User implements UserDetails {
 
     private String githubUsername;
     private String codeWarsUsername;
-    private Integer rankPoints;
+    private Integer rankPoints = 0;
 
     @ElementCollection( fetch = FetchType.EAGER)
     @CollectionTable(name = "completed_lesson", joinColumns = @JoinColumn(name = "user_id"))
