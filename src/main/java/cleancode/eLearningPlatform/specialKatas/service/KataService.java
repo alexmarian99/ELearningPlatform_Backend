@@ -112,6 +112,7 @@ public class KataService {
             }
             kata.getCompletedByUsers().add(userId);
             user.setRankPoints(user.getRankPoints() + (54 - (kata.getLevel() * 6)));
+            user.setWeeklyRankPoints(user.getWeeklyRankPoints() + (54 - (kata.getLevel() * 6)));
         }
         kataRepository.save(kata);
         userRepository.save(user);

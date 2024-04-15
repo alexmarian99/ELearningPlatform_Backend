@@ -12,6 +12,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -232,6 +233,9 @@ public class UserService {
     public List<User>findAllByOrderByRankPoints(){
     return userRepository.findAllByOrderByRankPointsDesc();
     }
+    public List<User>findAllByOrderByWeeklyRankPoints(){
+        return userRepository.findAllByOrderByWeeklyRankPointsDesc();
+    }
 
     public String addImageToUser(Long userId,String profileImageUrl){
        User user =  userRepository.findById(userId).orElse(null);
@@ -263,5 +267,15 @@ public class UserService {
 
     public List<User> getUserBySearchEmail(String email) {
         return userRepository.findUsersBySearchEmail(email);
+    }
+
+    @Scheduled(fixedRate = 604800000) // 7 days in milliseconds
+    public void restWeeklyRanking() {
+        List<User> userList= userRepository.findAll();
+        for (User user : userList) {
+            user.setWeeklyRankPoints(0);
+            userRepository.save(user);
+        }
+        System.out.println("reseted ");
     }
 }

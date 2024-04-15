@@ -16,6 +16,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByEmail(String email);
     List<User> findAllByOrderByRankPointsDesc();
+    List<User> findAllByOrderByWeeklyRankPointsDesc();
     boolean existsByEmail(String email);
 
     @Query("SELECT u FROM User u WHERE lower(u.email) LIKE lower(concat('%', :email, '%'))")

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,6 +47,8 @@ public class User implements UserDetails {
     private String githubUsername;
     private String codeWarsUsername;
     private Integer rankPoints = 0;
+
+    private Integer weeklyRankPoints = 0;
 
     @ElementCollection( fetch = FetchType.EAGER)
     @CollectionTable(name = "completed_lesson", joinColumns = @JoinColumn(name = "user_id"))
@@ -88,6 +91,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 
 
 }
