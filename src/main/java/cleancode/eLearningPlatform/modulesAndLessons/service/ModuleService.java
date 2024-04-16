@@ -49,13 +49,15 @@ public class ModuleService {
         return module;
     }
 
-    public Module saveModules(Module module) {
-        return moduleRepository.save(module);
+    public Module saveModules(Module module, String authHeader) {
+        return userService.checkIfUserAdmin(authHeader) ? moduleRepository.save(module) : null;
     }
 
     @Transactional
     @Modifying
-    public void deleteModule(int moduleId) {
+    public void deleteModule(int moduleId, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return;
+
         List<User> users = userRepository.findAll();
         Module module = moduleRepository.findById(moduleId).orElse(null);
 
@@ -65,7 +67,9 @@ public class ModuleService {
         System.out.println("DELETE MODULE -> " + moduleId + "__________________________________");
     }
 
-    public Module updateModule(int moduleId, Module updatedModule) {
+    public Module updateModule(int moduleId, Module updatedModule, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
+
         Optional<Module> existingModuleOptional = moduleRepository.findById(moduleId);
 
         if (existingModuleOptional.isPresent()) {

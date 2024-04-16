@@ -28,20 +28,19 @@ private final ModuleService moduleService;
     }
 
     @PostMapping
-    public Module saveModules(@RequestBody Module module){
-        return moduleService.saveModules(module);
+    public Module saveModules(@RequestBody Module module, @RequestHeader("Authorization") String authHeader){
+        return moduleService.saveModules(module, authHeader);
     }
 
     @DeleteMapping
-    public ResponseEntity<Response> deleteModule(@RequestParam (name = "moduleId") int moduleId){
-//        return ResponseEntity.ok( moduleService.deleteModule(moduleId));
-        moduleService.deleteModule(moduleId);
+    public ResponseEntity<Response> deleteModule(@RequestParam (name = "moduleId") int moduleId, @RequestHeader("Authorization") String authHeader){
+        moduleService.deleteModule(moduleId, authHeader);
         return ResponseEntity.ok(Response.builder().response("Deleted module " + moduleId).build());
     }
 
     @PutMapping("/{moduleId}")
-    public Module updateModule(@PathVariable int moduleId, @RequestBody Module updatedModule){
-        return moduleService.updateModule(moduleId,updatedModule);
+    public Module updateModule(@PathVariable int moduleId, @RequestBody Module updatedModule, @RequestHeader("Authorization") String authHeader){
+        return moduleService.updateModule(moduleId,updatedModule, authHeader);
     }
 }
 

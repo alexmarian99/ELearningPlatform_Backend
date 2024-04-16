@@ -21,6 +21,9 @@ public class JWTService {
         return extractClaim(token , Claims::getSubject);
     }
 
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
     public <T> T extractClaim(String token, Function<Claims ,T> claimsResolver){
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -35,12 +38,15 @@ public class JWTService {
                 .getBody();
     }
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+
+    public String generateToken(UserDetails userDetails, boolean rememberMe){
+        return generateToken(new HashMap<>(), userDetails, rememberMe);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, boolean rememberMe){
         User user = (User) userDetails;
+
+        long expirationDateTime = !rememberMe ? (1000 * 60 * 60 * 5) : (1000 * 60 * 60 * 24 * 14);
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -50,7 +56,7 @@ public class JWTService {
                 .claim("lastName", user.getLastName())
                 .claim("role",user.getRole())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 ))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationDateTime ))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

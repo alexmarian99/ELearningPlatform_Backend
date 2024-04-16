@@ -3,6 +3,7 @@ package cleancode.eLearningPlatform.specialKatas.service;
 import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
+import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
 import cleancode.eLearningPlatform.specialKatas.repository.KataRepository;
@@ -20,6 +21,7 @@ import java.util.*;
 public class KataService {
     private final KataRepository kataRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     Random random = new Random();
     private List<Kata> kataOfTheDay = new ArrayList<>();
 
