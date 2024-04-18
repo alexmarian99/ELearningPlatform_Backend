@@ -5,6 +5,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.service.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -29,17 +30,22 @@ public class LessonController {
     }
 
     @PostMapping()
-    public Lesson saveLesson(@RequestBody Lesson lesson) {
-        return lessonService.saveLesson(lesson);
+    public Lesson saveLesson(@RequestBody Lesson lesson,
+                             @RequestHeader (name = "Authorization") String authHeader) {
+        return lessonService.saveLesson(lesson, authHeader);
     }
 
     @DeleteMapping()
-    public String deleteLesson (@RequestParam (name = "lessonId") Integer lessonId, @RequestParam (name = "weekId") Integer weekId){
-        return lessonService.deleteLesson(lessonId, weekId);
+    public String deleteLesson (@RequestParam (name = "lessonId") Integer lessonId,
+                                @RequestParam (name = "weekId") Integer weekId,
+                                @RequestHeader (name = "Authorization") String authHeader){
+        return lessonService.deleteLesson(lessonId, weekId, authHeader);
     }
 
     @PutMapping("/{lessonId}")
-    public Lesson updateLesson(@PathVariable int lessonId,@RequestBody Lesson updatedLesson){
-        return lessonService.updateLesson(lessonId,updatedLesson);
+    public Lesson updateLesson(@PathVariable int lessonId,
+                               @RequestBody Lesson updatedLesson,
+                               @RequestHeader (name = "Authorization") String authHeader){
+        return lessonService.updateLesson(lessonId,updatedLesson, authHeader);
     }
 }

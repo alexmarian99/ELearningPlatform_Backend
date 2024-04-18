@@ -25,22 +25,27 @@ public class WeekController {
     }
 
     @PostMapping
-    public Week saveWeeks(@RequestBody Week week) {
-        return weekService.saveWeek(week);
+    public Week saveWeeks(@RequestBody Week week, @RequestHeader (name = "Authorization") String authHeader) {
+        return weekService.saveWeek(week, authHeader);
     }
 
     @DeleteMapping
-    public String deleteWeek(@RequestParam (name="weekId") int weekId){
-        return weekService.deleteWeekById(weekId);
+    public String deleteWeek(@RequestParam (name="weekId") int weekId,
+                             @RequestHeader (name = "Authorization") String authHeader){
+        return weekService.deleteWeekById(weekId , authHeader);
     }
 
     @PutMapping("/{weekId}")
-    public Week updateWeek(@PathVariable int weekId,@RequestBody Week updatedWeek){
-        return weekService.updateWeek(weekId,updatedWeek);
+    public Week updateWeek(@PathVariable int weekId,
+                           @RequestBody Week updatedWeek ,
+                           @RequestHeader (name = "Authorization") String authHeader){
+        return weekService.updateWeek(weekId,updatedWeek, authHeader);
     }
 
     @PatchMapping("/permissions")
-    public Week updatePermissionToWeek(@RequestParam (name = "weekId") int weekId, @RequestParam (name = "userId") int userId){
-        return weekService.updatePermissionToWeek(weekId, userId);
+    public Week updatePermissionToWeek(@RequestParam (name = "weekId") int weekId,
+                                       @RequestParam (name = "userId") int userId,
+                                       @RequestHeader (name = "Authorization") String authHeader){
+        return weekService.updatePermissionToWeek(weekId, userId , authHeader);
     }
 }

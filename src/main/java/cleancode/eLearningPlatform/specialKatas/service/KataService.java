@@ -43,24 +43,27 @@ public class KataService {
         kataOfTheDay = getOneRandomItemFromLists(List.of(firstGradeKatas, secondGradeKatas, thirdGradeKatas, fourthGradeKatas));
     }
 
-    public Kata saveKata(Kata kata) {
+    public Kata saveKata(Kata kata, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(kata.getTitle(), kata.getKataLink());
         // Kata does not exist, save it
         return existingKata.orElseGet(() -> kataRepository.save(kata));
     }
-    public void saveKata(List<Kata> katas) {
+    public void saveKata(List<Kata> katas, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return;
         kataRepository.deleteAll();
         kataRepository.saveAll(katas);
     }
 
-    public boolean kataExists(String title, String kataLink) {
+    public boolean kataExists(String title, String kataLink ) {
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(title, kataLink);
         return existingKata.isPresent();
     }
 
     @Modifying
     @Transactional
-    public Response deleteKata(int id) {
+    public Response deleteKata(int id, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         kataRepository.deleteById(id);
         return Response.builder().response("Kata deleted").build();
     }
@@ -79,7 +82,8 @@ public class KataService {
         return kataRepository.findById(kataId).orElse(null);
     }
 
-    public Kata editKata(Kata kata) {
+    public Kata editKata(Kata kata, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Optional<Kata> kataFromDB = kataRepository.findByTitle(kata.getTitle());
 
         if (kataFromDB.isPresent() && kataFromDB.get().getId() != kata.getId() ) {
@@ -101,7 +105,8 @@ public class KataService {
                 .build();
     }
 
-    public Response addOrRemoveUserFromKata(Long userId, int kataId) {
+    public Response addOrRemoveUserFromKata(Long userId, int kataId, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         User user = userRepository.findById(userId).orElse(null);
         Kata kata = kataRepository.findById(kataId).orElse(null);
 
