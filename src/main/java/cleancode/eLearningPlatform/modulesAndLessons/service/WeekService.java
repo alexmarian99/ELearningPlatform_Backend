@@ -43,7 +43,10 @@ public class WeekService {
 
     @Transactional
     @Modifying
-    public Week saveWeek(Week week){
+    public Week saveWeek(Week week, String authHeader){
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
+
+
         Module module = moduleRepository.findById(week.getModule().getId()).orElse(null);
         System.out.println("Week service, saved week " + week);
         userService.removeModuleFromAllUsers(module, false, new ArrayList<>());
@@ -52,7 +55,9 @@ public class WeekService {
     }
 
     @Modifying
-    public String deleteWeekById(int weekId){
+    public String deleteWeekById(int weekId, String authHeader){
+        if(!userService.checkIfUserAdmin(authHeader)) return "Get lost";
+
         Week deletedWeek = weekRepository.findById(weekId).orElse(null);
         List<User> users =  userRepository.findAll();
 
@@ -62,7 +67,8 @@ public class WeekService {
         return "Deleted Week " +weekId + " Succesfull";
     }
 
-    public Week updateWeek(int weekId, Week updatedWeek){
+    public Week updateWeek(int weekId, Week updatedWeek, String authHeader){
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Optional<Week> existingWeekOptional = weekRepository.findById(weekId);
 
         if(existingWeekOptional.isPresent()){
@@ -77,7 +83,8 @@ public class WeekService {
         }
     }
 
-    public Week updatePermissionToWeek(int weekId, int userId) {
+    public Week updatePermissionToWeek(int weekId, int userId, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Optional<Week> week = weekRepository.findById(weekId);
 
         if(week.isPresent()){

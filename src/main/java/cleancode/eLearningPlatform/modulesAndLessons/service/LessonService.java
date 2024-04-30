@@ -42,7 +42,8 @@ public class LessonService {
 
     @Transactional
     @Modifying
-   public Lesson saveLesson(Lesson lesson){
+   public Lesson saveLesson(Lesson lesson, String authHeader){
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Module module = moduleRepository.findById(lesson.getWeek().getModule().getId()).orElse(null);
         Week week = weekRepository.findById(lesson.getWeek().getId()).orElse(null);
 
@@ -55,7 +56,8 @@ public class LessonService {
 
     @Transactional
     @Modifying
-    public String deleteLesson(Integer lessonId, Integer weekId, List<User>... optionalUsers) {
+    public String deleteLesson(Integer lessonId, Integer weekId, String authHeader , List<User>... optionalUsers  ) {
+        if(!userService.checkIfUserAdmin(authHeader)) return "Nice try";
         List<User> users = optionalUsers.length > 0 ? optionalUsers[0] : userRepository.findAll();
 
         lessonRepository.deleteById(lessonId);
@@ -66,7 +68,8 @@ public class LessonService {
     }
 
 
-    public Lesson updateLesson(int lessonId, Lesson updatedLesson){
+    public Lesson updateLesson(int lessonId, Lesson updatedLesson,  String authHeader){
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Optional<Lesson> existUpdatedOptional = lessonRepository.findById(lessonId);
 
         if(existUpdatedOptional.isPresent()){

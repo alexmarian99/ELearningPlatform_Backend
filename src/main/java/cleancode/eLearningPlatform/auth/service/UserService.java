@@ -51,7 +51,7 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user, false);
         return AuthenticationResponse.builder().response(jwtToken).build();
     }
 
@@ -61,7 +61,7 @@ public class UserService {
                 authenticationRequest.getPassword()
         ));
         var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user, authenticationRequest.isRememberMe());
         return AuthenticationResponse.builder().response(jwtToken).build();
     }
 
@@ -265,6 +265,13 @@ public class UserService {
 
     }
 
+    public boolean checkIfUserAdmin(String authHeader){
+        String token = authHeader.substring(7);
+        if(!jwtService.extractRole(token).equals("ADMIN")){
+            return false;
+        };
+        return true;
+    }
     public List<User> getUserBySearchEmail(String email) {
         return userRepository.findUsersBySearchEmail(email);
     }
