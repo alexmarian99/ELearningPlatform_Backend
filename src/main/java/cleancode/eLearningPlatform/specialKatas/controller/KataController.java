@@ -38,7 +38,8 @@ public class KataController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> saveOneKata(@RequestBody Kata kata) {
+    public ResponseEntity<Object> saveOneKata(@RequestBody Kata kata,
+                                              @RequestHeader (name = "Authorization") String authHeader) {
         // Check if a kata with the same title and link already exists
         boolean kataExists = kataService.kataExists(kata.getTitle(), kata.getKataLink());
         if (kataExists) {
@@ -46,22 +47,24 @@ public class KataController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Kata already exists");
         } else {
             // Kata does not exist, save it and return a success response
-            Kata savedKata = kataService.saveKata(kata);
+            Kata savedKata = kataService.saveKata(kata, authHeader);
             return ResponseEntity.ok(savedKata);
         }
     }
 
     @PostMapping("/savePopulateKatas")
-    public Response savePopulateKatas(@RequestBody List<Kata> katas) {
+    public Response savePopulateKatas(@RequestBody List<Kata> katas,
+                                      @RequestHeader (name = "Authorization") String authHeader) {
         // Check if a kata with the same title and link already exists
         System.out.println(katas.size());
-       kataService.saveKata(katas);
+       kataService.saveKata(katas, authHeader);
        return Response.builder().response("ALL KATAS ADDED").build();
     }
 
     @PutMapping("/{kataId}")
-    public ResponseEntity<Object> editKata(@RequestBody Kata kata) {
-        Kata dbKata = kataService.editKata(kata);
+    public ResponseEntity<Object> editKata(@RequestBody Kata kata,
+                                           @RequestHeader (name = "Authorization") String authHeader) {
+        Kata dbKata = kataService.editKata(kata, authHeader);
         if (dbKata != null) {
             return ResponseEntity.ok(dbKata);
         } else {
@@ -70,13 +73,16 @@ public class KataController {
     }
 
     @PatchMapping("/addUserToKata")
-    public ResponseEntity<Response> addOrRemoveUserFromKata(@RequestParam(name = "userId") Long userId, @RequestParam(name = "kataId") Integer kataId) {
-        return ResponseEntity.ok(kataService.addOrRemoveUserFromKata(userId, kataId));
+    public ResponseEntity<Response> addOrRemoveUserFromKata(@RequestParam(name = "userId") Long userId,
+                                                            @RequestParam(name = "kataId") Integer kataId,
+                                                            @RequestHeader (name = "Authorization") String authHeader) {
+        return ResponseEntity.ok(kataService.addOrRemoveUserFromKata(userId, kataId, authHeader));
     }
 
     @DeleteMapping("/{kataId}")
-    public ResponseEntity<Response> deleteKata(@PathVariable int kataId) {
-        return ResponseEntity.ok(kataService.deleteKata(kataId));
+    public ResponseEntity<Response> deleteKata(@PathVariable int kataId,
+                                               @RequestHeader (name = "Authorization") String authHeader) {
+        return ResponseEntity.ok(kataService.deleteKata(kataId, authHeader));
     }
 
     @GetMapping("/filtered")

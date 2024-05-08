@@ -57,6 +57,10 @@ public class UserController {
     public ResponseEntity<List<User>> getUsers(){
         return ResponseEntity.ok(userService.findAllByOrderByRankPoints());
     }
+    @GetMapping("/leaderboard/allTime")
+    public ResponseEntity<List<User>> getUsersWeekly(){
+        return ResponseEntity.ok(userService.findAllByOrderByWeeklyRankPoints());
+    }
 
     @PostMapping("/addimage")
     public ResponseEntity<String> addNewImage(@RequestParam(name="userId") Long userId,

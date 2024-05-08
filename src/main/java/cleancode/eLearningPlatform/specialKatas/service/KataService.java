@@ -3,6 +3,7 @@ package cleancode.eLearningPlatform.specialKatas.service;
 import cleancode.eLearningPlatform.auth.model.Response;
 import cleancode.eLearningPlatform.auth.model.User;
 import cleancode.eLearningPlatform.auth.repository.UserRepository;
+import cleancode.eLearningPlatform.auth.service.UserService;
 import cleancode.eLearningPlatform.specialKatas.model.Kata;
 import cleancode.eLearningPlatform.specialKatas.model.KataPaginationResponse;
 import cleancode.eLearningPlatform.specialKatas.repository.KataRepository;
@@ -20,6 +21,7 @@ import java.util.*;
 public class KataService {
     private final KataRepository kataRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     Random random = new Random();
     private List<Kata> kataOfTheDay = new ArrayList<>();
 
@@ -41,24 +43,27 @@ public class KataService {
         kataOfTheDay = getOneRandomItemFromLists(List.of(firstGradeKatas, secondGradeKatas, thirdGradeKatas, fourthGradeKatas));
     }
 
-    public Kata saveKata(Kata kata) {
+    public Kata saveKata(Kata kata, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(kata.getTitle(), kata.getKataLink());
         // Kata does not exist, save it
         return existingKata.orElseGet(() -> kataRepository.save(kata));
     }
-    public void saveKata(List<Kata> katas) {
+    public void saveKata(List<Kata> katas, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return;
         kataRepository.deleteAll();
         kataRepository.saveAll(katas);
     }
 
-    public boolean kataExists(String title, String kataLink) {
+    public boolean kataExists(String title, String kataLink ) {
         Optional<Kata> existingKata = kataRepository.findByTitleAndKataLink(title, kataLink);
         return existingKata.isPresent();
     }
 
     @Modifying
     @Transactional
-    public Response deleteKata(int id) {
+    public Response deleteKata(int id, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         kataRepository.deleteById(id);
         return Response.builder().response("Kata deleted").build();
     }
@@ -77,7 +82,8 @@ public class KataService {
         return kataRepository.findById(kataId).orElse(null);
     }
 
-    public Kata editKata(Kata kata) {
+    public Kata editKata(Kata kata, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         Optional<Kata> kataFromDB = kataRepository.findByTitle(kata.getTitle());
 
         if (kataFromDB.isPresent() && kataFromDB.get().getId() != kata.getId() ) {
@@ -99,7 +105,8 @@ public class KataService {
                 .build();
     }
 
-    public Response addOrRemoveUserFromKata(Long userId, int kataId) {
+    public Response addOrRemoveUserFromKata(Long userId, int kataId, String authHeader) {
+        if(!userService.checkIfUserAdmin(authHeader)) return null;
         User user = userRepository.findById(userId).orElse(null);
         Kata kata = kataRepository.findById(kataId).orElse(null);
 
@@ -112,6 +119,7 @@ public class KataService {
             }
             kata.getCompletedByUsers().add(userId);
             user.setRankPoints(user.getRankPoints() + (54 - (kata.getLevel() * 6)));
+            user.setWeeklyRankPoints(user.getWeeklyRankPoints() + (54 - (kata.getLevel() * 6)));
         }
         kataRepository.save(kata);
         userRepository.save(user);

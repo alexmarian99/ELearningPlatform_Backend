@@ -12,6 +12,7 @@ import cleancode.eLearningPlatform.modulesAndLessons.repository.LessonRepository
 import cleancode.eLearningPlatform.modulesAndLessons.repository.WeekRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +38,7 @@ public class UserService {
         boolean emailExists = userRepository.existsByEmail(registerRequest.getEmail());
 
         if (emailExists) {
-            return AuthenticationResponse.builder().response("0").build();
+            return AuthenticationResponse.builder().response("Email already exists!").build();
         }
 
         var user = User.builder()
@@ -45,14 +46,14 @@ public class UserService {
                 .lastName(registerRequest.getLastName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .codeWarsUsername(registerRequest.getCodeWarsUsername())
                 .role(Role.USER)
                 .build();
 
         userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user, false);
         return AuthenticationResponse.builder().response(jwtToken).build();
     }
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -60,7 +61,7 @@ public class UserService {
                 authenticationRequest.getPassword()
         ));
         var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(user, authenticationRequest.isRememberMe());
         return AuthenticationResponse.builder().response(jwtToken).build();
     }
 
@@ -232,6 +233,9 @@ public class UserService {
     public List<User>findAllByOrderByRankPoints(){
     return userRepository.findAllByOrderByRankPointsDesc();
     }
+    public List<User>findAllByOrderByWeeklyRankPoints(){
+        return userRepository.findAllByOrderByWeeklyRankPointsDesc();
+    }
 
     public String addImageToUser(Long userId,String profileImageUrl){
        User user =  userRepository.findById(userId).orElse(null);
@@ -261,7 +265,24 @@ public class UserService {
 
     }
 
+    public boolean checkIfUserAdmin(String authHeader){
+        String token = authHeader.substring(7);
+        if(!jwtService.extractRole(token).equals("ADMIN")){
+            return false;
+        };
+        return true;
+    }
     public List<User> getUserBySearchEmail(String email) {
         return userRepository.findUsersBySearchEmail(email);
+    }
+
+    @Scheduled(fixedRate = 604800000) // 7 days in milliseconds
+    public void restWeeklyRanking() {
+        List<User> userList= userRepository.findAll();
+        for (User user : userList) {
+            user.setWeeklyRankPoints(0);
+            userRepository.save(user);
+        }
+        System.out.println("reseted ");
     }
 }
