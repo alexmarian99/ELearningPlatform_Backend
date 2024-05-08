@@ -38,7 +38,9 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-    private String phoneNumber;
+    @Column(nullable = true)
+    private String phoneNumber ="";
+
     private String profileImageUrl;
 
     private String location;
@@ -46,6 +48,11 @@ public class User implements UserDetails {
 
     private String githubUsername;
     private String codeWarsUsername;
+    private String discordUsername;
+    private String linkedInUsername;
+    private String instagramUsername;
+    private String facebookUsername;
+
     private Integer rankPoints = 0;
 
     private Integer weeklyRankPoints = 0;

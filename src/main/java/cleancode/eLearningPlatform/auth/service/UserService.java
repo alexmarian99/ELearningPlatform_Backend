@@ -47,6 +47,7 @@ public class UserService {
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .codeWarsUsername(registerRequest.getCodeWarsUsername())
+                .phoneNumber(registerRequest.getPhoneNumber())
                 .role(Role.USER)
                 .build();
 
@@ -54,6 +55,7 @@ public class UserService {
         var jwtToken = jwtService.generateToken(user, false);
         return AuthenticationResponse.builder().response(jwtToken).build();
     }
+
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
