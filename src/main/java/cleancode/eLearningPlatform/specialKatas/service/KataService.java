@@ -106,7 +106,11 @@ public class KataService {
     }
 
     public Response addOrRemoveUserFromKata(Long userId, int kataId, String authHeader) {
-        if(!userService.checkIfUserAdmin(authHeader)) return null;
+        System.out.println("Here we are in service function");
+        System.out.println(userId + " " + kataId + " " + authHeader);
+
+        //if(!userService.checkIfUserAdmin(authHeader)) return null;
+
         User user = userRepository.findById(userId).orElse(null);
         Kata kata = kataRepository.findById(kataId).orElse(null);
 
