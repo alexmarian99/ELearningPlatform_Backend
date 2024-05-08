@@ -38,14 +38,15 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-    @Column(nullable = true)
-    private String phoneNumber ="";
 
     private String profileImageUrl;
+
+
 
     private String location;
     private String address;
 
+    private String phoneNumber;
     private String githubUsername;
     private String codeWarsUsername;
     private String discordUsername;

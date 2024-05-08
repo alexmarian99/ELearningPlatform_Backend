@@ -38,7 +38,7 @@ public class UserService {
         boolean emailExists = userRepository.existsByEmail(registerRequest.getEmail());
 
         if (emailExists) {
-            return AuthenticationResponse.builder().response("0").build();
+            return AuthenticationResponse.builder().response("Email already exists!").build();
         }
 
         var user = User.builder()
@@ -46,8 +46,6 @@ public class UserService {
                 .lastName(registerRequest.getLastName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .codeWarsUsername(registerRequest.getCodeWarsUsername())
-                .phoneNumber(registerRequest.getPhoneNumber())
                 .role(Role.USER)
                 .build();
 
