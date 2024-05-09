@@ -41,8 +41,7 @@ public class User implements UserDetails {
 
     private String profileImageUrl;
 
-
-
+    private String birthday;
     private String location;
     private String address;
 
